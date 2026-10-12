@@ -524,7 +524,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.1";
+const APP_VERSION = "2.2";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -911,11 +911,11 @@ function vLogin() {
   <div class="col">
     ${logo("xl")}
     <p class="lead">Skorların ve serilerin kaybolmasın diye giriş yap.</p>
-    <div class="eyebrow" style="margin-top:14px">Giriş yöntemi</div>
+    <div class="spacer"></div>
+    <div class="eyebrow">Giriş yöntemi</div>
     <button class="b3 b-paper big authbtn" data-a="auth" data-v="Apple"><span class="ic">${I.apple}</span>Apple ile devam et</button>
     <button class="b3 b-paper big authbtn" data-a="auth" data-v="Google"><span class="ic">${I.google}</span>Google ile devam et</button>
     <button class="b3 b-lime big authbtn" data-a="auth" data-v="E-posta"><span class="ic">${I.mail}</span>E-posta ile devam et</button>
-    <div class="spacer"></div>
     <div class="or">ya da</div>
     <button class="b3 b-tile big" data-a="guest">Misafir olarak oyna</button>
     <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
