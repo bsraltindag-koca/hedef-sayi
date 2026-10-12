@@ -218,6 +218,10 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .tile:active{transform:translateY(4px);box-shadow:0 3px 0 var(--tile-shade)}
 .tile.der{color:var(--amber-ink)}
 .tile.sel{background:var(--amber);color:var(--on-accent);box-shadow:0 0 0 4px var(--ink),0 7px 0 4px var(--amber-shade)}
+.tile{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.tile .tv{line-height:1}
+.tile .f{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;margin-top:4px;line-height:1;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tile.sel .f{color:color-mix(in srgb,var(--on-accent) 70%,transparent)}
 .tile.used{background:var(--tile-dim);color:var(--faint);box-shadow:none;cursor:default;animation:none}
 .tile .k{position:absolute;left:10px;top:6px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);display:none}
 .tile.sel .k{color:var(--on-accent)}
@@ -612,7 +616,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "3.4";
+const APP_VERSION = "3.5";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -816,7 +820,7 @@ function startDaily() {
 }
 function playRound(c) {
   const cur = c.current;
-  G = { ctx: c, tiles: cur.nums.map((v, i) => ({ id: i, v, used: false, der: false })), nextId: cur.nums.length, steps: [], sel: null, op: null, hintsUsed: 0, hint: null, elapsed: 0, last: performance.now(), paused: false, over: false, lastTick: -1 };
+  G = { ctx: c, tiles: cur.nums.map((v, i) => ({ id: i, v, used: false, der: false })), nextId: cur.nums.length, order: cur.nums.map((_, i) => i), steps: [], sel: null, op: null, hintsUsed: 0, hint: null, elapsed: 0, last: performance.now(), paused: false, over: false, lastTick: -1 };
   go("game"); startTimer();
 }
 function startTimer() {
@@ -850,7 +854,8 @@ function paintTimer() {
     el.querySelector("span").textContent = fmtT(G.elapsed);
   }
 }
-const liveTiles = () => G.tiles.filter(t => !t.used);
+// Playable cards in their on-screen order; a result takes the slot of the first card it was made from.
+const liveTiles = () => G.order.map(tileById);
 const tileById = id => G.tiles.find(t => t.id === id);
 function toast(msg) {
   document.querySelectorAll(".toast").forEach(t => t.remove());
@@ -881,8 +886,10 @@ function combine(aId, op, bId) {
   }
   A.used = B.used = true;
   const id = G.nextId++;
-  G.tiles.push({ id, v: r, used: false, der: true });
-  G.steps.push({ aId, bId, id, a: A.v, op, b: B.v, r });
+  G.tiles.push({ id, v: r, used: false, der: true, f: `${A.v}${OPSYM[op]}${B.v}` });
+  const prevOrder = G.order.slice();
+  G.order = G.order.map(x => x === aId ? id : x).filter(x => x !== bId);
+  G.steps.push({ aId, bId, id, a: A.v, op, b: B.v, r, prevOrder });
   G.sel = id; G.op = null; G.hint = null;
   sfx.combine(); buzz(15);
   renderGame();
@@ -895,11 +902,13 @@ function undo() {
   const s = G.steps.pop(); if (!s) { sfx.err(); return; }
   G.tiles = G.tiles.filter(t => t.id !== s.id);
   tileById(s.aId).used = false; tileById(s.bId).used = false;
+  G.order = s.prevOrder;
   G.sel = s.aId; G.op = s.op; G.hint = null; sfx.tap(); renderGame();
 }
 function resetBoard() {
   if (G.over) return;
   G.tiles = G.tiles.filter(t => !t.der); G.tiles.forEach(t => t.used = false);
+  G.order = G.tiles.map(t => t.id);
   G.steps = []; G.sel = null; G.op = null; G.hint = null; sfx.tap(); renderGame();
 }
 function useHint() {
@@ -1087,9 +1096,8 @@ function vSetup() {
 function vGame() {
   const c = G.ctx, cur = c.current, L = LEVELS[c.level], C = 2 * Math.PI * 92;
   const sel = G.sel !== null ? tileById(G.sel) : null;
-  const live = liveTiles(), used = G.tiles.filter(t => t.used);
-  const tiles = live.map((t, i) => `<button class="tile ${t.der ? "der" : ""} ${G.sel === t.id ? "sel" : ""}" data-a="tile" data-v="${t.id}" aria-label="${t.v}${G.sel === t.id ? ", seçili" : ""}">${i < 9 ? `<span class="k">${i + 1}</span>` : ""}${t.v}</button>`).join("")
-    + used.filter(t => !t.der).map(t => `<button class="tile used" disabled aria-label="${t.v}, kullanıldı">${t.v}</button>`).join("");
+  const live = liveTiles();
+  const tiles = live.map((t, i) => `<button class="tile ${t.der ? "der" : ""} ${G.sel === t.id ? "sel" : ""}" data-a="tile" data-v="${t.id}" aria-label="${t.v}${t.f ? " (" + t.f + ")" : ""}${G.sel === t.id ? ", seçili" : ""}">${i < 9 ? `<span class="k">${i + 1}</span>` : ""}<span class="tv">${t.v}</span>${t.f ? `<span class="f">${t.f}</span>` : ""}</button>`).join("");
   const diff = sel ? Math.abs(cur.target - sel.v) : null;
   const liveBar = `<div class="live" aria-live="polite">
       ${sel ? `<span class="lv a">${sel.v}</span>` : `<span class="lv slot">sayı seç</span>`}
@@ -1127,7 +1135,7 @@ function vGame() {
     </header>
     <main class="gmain">
       ${ring}${liveBar}<p class="leftcap">${live.length > 1 ? `<b>${live.length}</b> kart kaldı · hepsini kullanarak hedefe ulaş` : "Son kart"}</p>${chips}
-      <div class="tiles ${(() => { const n = live.length + used.filter(t => !t.der).length; return n > 15 ? "many lots" : n > 8 ? "many" : ""; })()}">${tiles}</div>
+      <div class="tiles ${(() => { const n = live.length; return n > 15 ? "many lots" : n > 8 ? "many" : ""; })()}">${tiles}</div>
       <div class="ops">${["+", "-", "*", "/"].map(o => `<button class="b3 b-pink op ${G.op === o ? "on" : ""}" data-a="op" data-v="${o}" aria-label="${OPSYM[o]}">${OPSYM[o]}</button>`).join("")}</div>
     </main>
     <aside class="gside">
