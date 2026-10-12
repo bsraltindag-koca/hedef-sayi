@@ -535,6 +535,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .dhome .resume b{font-size:17px}
 .dhome .resume small{font-size:14px}
 .dhome .resume{margin-top:22px}
+.startgrp{display:flex;flex-direction:column;gap:12px;margin-top:6px}
 .rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
 .cslider{display:flex;flex-direction:column;gap:10px;width:100%}
 .cs-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -602,7 +603,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "3.1";
+const APP_VERSION = "3.2";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -1063,9 +1064,7 @@ function vSetup() {
     <div class="eyebrow">Seviye</div>
     <div class="grid2">${lv}</div>
     ${countSlider()}
-    <div class="spacer"></div>
-    ${resumeNote()}
-    <button class="b3 b-paper big" data-a="start">Oyuna başla</button>
+    <div class="startgrp">${resumeNote()}<button class="b3 b-paper big" data-a="start">Oyuna başla</button></div>
   </div>`;
 }
 function vGame() {
