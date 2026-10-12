@@ -81,13 +81,30 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 
 /* ---------- login ---------- */
 .login{position:relative;overflow:hidden}
-.floaters{position:absolute;right:-44px;top:14px;width:180px;height:320px;pointer-events:none}
+.floaters{position:absolute;right:-22px;top:18px;width:130px;height:220px;pointer-events:none;opacity:.9}
 .login .lead{max-width:calc(100% - 64px)}
 .fl{position:absolute;display:grid;place-items:center;font-family:var(--display);font-weight:800;box-shadow:0 8px 0 var(--sh)}
-.fl1{right:30px;top:0;width:100px;height:100px;border-radius:26px;background:var(--tile);--sh:var(--tile-shade);font-size:40px;transform:rotate(-8deg)}
-.fl2{right:-6px;top:112px;width:72px;height:72px;border-radius:50%;background:var(--pink);--sh:var(--pink-shade);color:var(--on-accent);font-size:32px}
-.fl3{right:-28px;top:196px;width:104px;height:104px;border-radius:26px;background:var(--amber);--sh:var(--amber-shade);color:var(--on-accent);font-size:44px;transform:rotate(9deg)}
-.login .col{padding-top:120px;position:relative}
+.fl1{right:34px;top:0;width:62px;height:62px;border-radius:16px;background:var(--tile);--sh:var(--tile-shade);font-size:24px;transform:rotate(-8deg)}
+.fl2{right:4px;top:74px;width:42px;height:42px;border-radius:50%;background:var(--pink);--sh:var(--pink-shade);color:var(--on-accent);font-size:18px}
+.fl3{right:-8px;top:128px;width:62px;height:62px;border-radius:16px;background:var(--amber);--sh:var(--amber-shade);color:var(--on-accent);font-size:22px;transform:rotate(9deg)}
+.login .fl{box-shadow:0 4px 0 var(--sh)}
+.login .col{padding-block:clamp(20px,7vh,72px) clamp(14px,3vh,28px);position:relative;gap:clamp(14px,3.2vh,28px);max-width:420px;justify-content:center;min-height:0}
+.login .spacer{display:none}
+@media (max-height:640px){.lg-group .eyebrow{display:none}}
+.logo.lg{font-size:clamp(42px,7vh,56px)}
+.lg-head{display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px)}
+.login .lead{font-size:16px;max-width:calc(100% - 96px);line-height:1.45}
+.lg-group{display:flex;flex-direction:column;gap:clamp(8px,1.3vh,10px)}
+.lg-group .eyebrow{font-size:11px;margin-bottom:4px}
+.login .authbtn{min-height:clamp(44px,6.4vh,52px);padding:8px 16px 8px 8px;font-size:16px;gap:12px;border-radius:16px;--sh:transparent;box-shadow:0 3px 0 var(--sh)}
+.login .b-paper{--sh:#8d85b0}
+.login .b-lime{--sh:var(--lime-shade)}
+.login .b-tile.guest{--sh:var(--tile-shade);justify-content:center;padding:8px 16px}
+.login .authbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--sh)}
+.login .authbtn .ic{width:clamp(30px,4.6vh,36px);height:clamp(30px,4.6vh,36px);border-radius:10px}
+.login .authbtn .ic svg{width:18px;height:18px}
+.login .or{font-size:13px;margin:2px 0}
+.login .legal{font-size:12px;margin-top:6px}
 .authbtn{display:flex;align-items:center;gap:18px;text-align:left}
 .authbtn .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none}
 .authbtn .ic svg{width:24px;height:24px}
@@ -517,7 +534,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.6";
+const APP_VERSION = "1.7";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -902,17 +919,21 @@ function vLogin() {
   return `<div class="login col-wrap" style="flex:1;display:flex">
   <div class="floaters" aria-hidden="true"><div class="fl fl1">25</div><div class="fl fl2">×</div><div class="fl fl3">100</div></div>
   <div class="col">
-    ${logo("xl")}
-    <p class="lead">Skorların ve serilerin kaybolmasın diye giriş yap.</p>
-    <div class="eyebrow" style="margin-top:14px">Giriş yöntemi</div>
-    <button class="b3 b-paper big authbtn" data-a="auth" data-v="Apple"><span class="ic">${I.apple}</span>Apple ile devam et</button>
-    <button class="b3 b-paper big authbtn" data-a="auth" data-v="Google"><span class="ic">${I.google}</span>Google ile devam et</button>
-    <button class="b3 b-lime big authbtn" data-a="auth" data-v="E-posta"><span class="ic">${I.mail}</span>E-posta ile devam et</button>
+    <div class="lg-head">${logo("lg")}
+    <p class="lead">Skorların ve serilerin kaybolmasın diye giriş yap.</p></div>
+    <div class="lg-group">
+      <div class="eyebrow">Giriş yöntemi</div>
+      <button class="b3 b-paper authbtn" data-a="auth" data-v="Apple"><span class="ic">${I.apple}</span>Apple ile devam et</button>
+      <button class="b3 b-paper authbtn" data-a="auth" data-v="Google"><span class="ic">${I.google}</span>Google ile devam et</button>
+      <button class="b3 b-lime authbtn" data-a="auth" data-v="E-posta"><span class="ic">${I.mail}</span>E-posta ile devam et</button>
+    </div>
     <div class="spacer"></div>
-    <div class="or">ya da</div>
-    <button class="b3 b-tile big" data-a="guest">Misafir olarak oyna</button>
-    <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
-    <p class="legal">Devam ederek <a href="#kosullar" data-a="legal">Kullanım Koşulları</a>'nı ve <a href="#gizlilik" data-a="legal">Gizlilik Politikası</a>'nı kabul etmiş olursun.</p>
+    <div class="lg-group">
+      <div class="or">ya da</div>
+      <button class="b3 b-tile authbtn guest" data-a="guest">Misafir olarak oyna</button>
+      <p class="legal">Devam ederek <a href="#kosullar" data-a="legal">Kullanım Koşulları</a>'nı ve <a href="#gizlilik" data-a="legal">Gizlilik Politikası</a>'nı kabul etmiş olursun.</p>
+      <p class="ver" style="margin:0;font-size:12px">sürüm ${APP_VERSION}</p>
+    </div>
   </div></div>`;
 }
 function vHome() {
