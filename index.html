@@ -531,6 +531,49 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
 .pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
+
+/* ---------- mobile type scale: one size per role across every phone screen ---------- */
+@media (max-width:919px){
+  :root{--t-display:52px;--t-title:28px;--t-head:18px;--t-body:16px;--t-btn:17px;--t-small:14px;--t-cap:12px;--t-num:22px}
+  /* display */
+  .result h1,.col > h1{font-size:var(--t-display)!important;line-height:.92;letter-spacing:-.05em}
+  .logo.xl{font-size:60px}
+  /* page titles */
+  .toprow h1,.hello h1{font-size:var(--t-title);line-height:1.08;font-weight:800;letter-spacing:-.03em}
+  .sheet h2{font-size:22px}
+  /* section / card headings */
+  .mode h3,.lvl h3,.dailycard h3,.receipt h3,.panel h3,.recent h3{font-size:var(--t-head);font-weight:800;letter-spacing:-.01em}
+  .playcard h2{font-size:24px}
+  .sheet .hh h2{font-size:22px}
+  /* body + labels */
+  .lead,.sheet p,.sheet ol{font-size:var(--t-body);line-height:1.45}
+  .result .lead{font-size:var(--t-body)}
+  .menu button,.srow .lb,.acct b,.danger,.mi,.prof b{font-size:var(--t-body);font-weight:600}
+  .prof b,.acct b{font-weight:700}
+  .resume b{font-size:15px}
+  /* buttons */
+  .big,.rbtns button,.sheet .one,.sheet .row button,.authbtn,.finish{font-size:var(--t-btn)!important;font-weight:700}
+  .big,.rbtns button{min-height:56px}
+  .seg3 button{font-size:20px;height:56px}
+  .seg button{font-size:15px}
+  /* secondary */
+  .mode p,.playcard p,.dailycard p,.srow .lb small,.acct small,.stat small,.sc small,.cmp small,.bestline,.hintbox,.rnote,.rnote2,.resume small,.legend div,.prof small{font-size:var(--t-small)}
+  .mode p,.playcard p,.dailycard p{font-weight:500}
+  .lvl p,.sc span,.panel .ph span,.receipt .rh span{font-size:var(--t-cap)}
+  /* captions */
+  .eyebrow{font-size:var(--t-cap)}
+  .legal,.ver{font-size:var(--t-cap)}
+  /* numbers in tiles */
+  .stat b,.mode .rt,.dailycard .dt{font-size:var(--t-num)!important;font-weight:800}
+  .dailycard .dt{font-size:16px!important}
+  .sc b{font-size:28px}
+  .opsuse b{font-size:18px}
+  .rrow{font-size:16px}
+  .paperwrap .tot b{font-size:36px}
+  .cmp .bx{font-size:34px;height:76px;min-width:104px}
+  .sumlist div{font-size:14px}
+  .stepper b{font-size:24px}
+}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -538,7 +581,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.5";
+const APP_VERSION = "2.6";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
