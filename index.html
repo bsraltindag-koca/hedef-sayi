@@ -81,12 +81,13 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 
 /* ---------- login ---------- */
 .login{position:relative;overflow:hidden}
-.floaters{position:absolute;right:-30px;top:40px;width:180px;height:320px;pointer-events:none}
+.floaters{position:absolute;right:-44px;top:14px;width:180px;height:320px;pointer-events:none}
+.login .lead{max-width:calc(100% - 64px)}
 .fl{position:absolute;display:grid;place-items:center;font-family:var(--display);font-weight:800;box-shadow:0 8px 0 var(--sh)}
-.fl1{right:20px;top:0;width:112px;height:112px;border-radius:26px;background:var(--tile);--sh:var(--tile-shade);font-size:40px;transform:rotate(-8deg)}
-.fl2{right:-10px;top:130px;width:84px;height:84px;border-radius:50%;background:var(--pink);--sh:var(--pink-shade);color:var(--on-accent);font-size:32px}
-.fl3{right:-34px;top:230px;width:120px;height:120px;border-radius:26px;background:var(--amber);--sh:var(--amber-shade);color:var(--on-accent);font-size:44px;transform:rotate(9deg)}
-.login .col{padding-top:120px}
+.fl1{right:30px;top:0;width:100px;height:100px;border-radius:26px;background:var(--tile);--sh:var(--tile-shade);font-size:40px;transform:rotate(-8deg)}
+.fl2{right:-6px;top:112px;width:72px;height:72px;border-radius:50%;background:var(--pink);--sh:var(--pink-shade);color:var(--on-accent);font-size:32px}
+.fl3{right:-28px;top:196px;width:104px;height:104px;border-radius:26px;background:var(--amber);--sh:var(--amber-shade);color:var(--on-accent);font-size:44px;transform:rotate(9deg)}
+.login .col{padding-top:120px;position:relative}
 .authbtn{display:flex;align-items:center;gap:18px;text-align:left}
 .authbtn .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none}
 .authbtn .ic svg{width:24px;height:24px}
@@ -118,6 +119,16 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .menu svg{width:26px;height:26px;color:var(--muted);flex:none}
 .menu .chev{margin-left:auto;color:var(--faint);font-family:var(--mono)}
 
+@media (max-width:380px){
+  .playcard,.dailycard{padding:20px 20px 20px 22px}
+  .playcard h2{font-size:30px}
+  .playcard p,.dailycard p{font-size:15px}
+  .playbtn{width:60px;height:60px}
+  .dailycard h3{font-size:21px}
+  .dailycard .dt{font-size:17px}
+  .lvl{padding:16px}
+  .lvl p{font-size:13px}
+}
 /* ---------- setup ---------- */
 .mode{display:flex;align-items:center;gap:18px;padding:20px 24px;text-align:left;width:100%}
 .mode .radio{width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid var(--on-accent);flex:none;display:grid;place-items:center}
@@ -158,27 +169,39 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .ghead .backb,.ghead .dk{display:none}
 @media (max-width:919px){.ghead{gap:8px}.ghead .logo{font-size:24px}.gmeta{gap:10px;font-size:15px}.gmeta b{font-size:17px}.pill{padding:6px 10px}}
 .gmain{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
-.ring{position:relative;width:min(72vw,310px);aspect-ratio:1;max-width:100%}
+.ring{position:relative;width:min(66vw,310px,32vh);aspect-ratio:1;max-width:100%}
 .ring > svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring .tm svg{width:18px;height:18px;flex:none}
 .ring .ctr{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
 .ring .ctr small{font-family:var(--mono);font-weight:700;letter-spacing:.32em;color:var(--muted);font-size:14px;padding-left:.32em}
-.ring .ctr .tgt{font-family:var(--display);font-weight:800;font-size:clamp(78px,24vw,120px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.ring .ctr .tgt{font-family:var(--display);font-weight:800;font-size:clamp(64px,min(21vw,11vh),120px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
 .ring .ctr .tm{font-family:var(--mono);font-weight:800;font-size:22px;color:var(--lime-ink);display:flex;gap:6px;align-items:center;justify-content:center}
 .ring .ctr .tm.warn{color:var(--amber-ink)} .ring .ctr .tm.crit{color:var(--pink-ink)}
 .live{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:20px;padding:12px 18px;width:100%;max-width:420px;justify-content:center;flex-wrap:wrap}
 .live .lv{min-width:84px;height:56px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:28px;padding:0 14px}
 .live .lv.a{background:var(--amber);color:var(--on-accent)}
 .live .lv.slot{border:2.5px dashed var(--faint);color:var(--muted);font-family:var(--body);font-weight:500;font-size:16px}
+.live .lv,.live .lop{flex:none}
 .live .lop{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px;background:var(--pink);color:var(--on-accent)}
 .live .lop.empty{background:transparent;border:2.5px dashed var(--faint);color:var(--faint)}
 .live .fark{color:var(--muted);font-size:18px;white-space:nowrap}
+@media (max-width:919px){
+  .live{flex-wrap:nowrap;gap:10px;padding:10px 12px}
+  .live .lv{min-width:64px;height:50px;font-size:24px;padding:0 12px}
+  .live .lv.slot{font-size:14px;padding:0 10px}
+  .live .lop{width:40px;height:40px;font-size:20px}
+  .live .fark{font-size:15px}.live .fark b{font-size:22px}
+  .live .eq{display:none}
+}
 .live .fark b{color:var(--amber-ink);font-size:26px;font-weight:800}
-.chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.chips{display:flex;gap:10px;width:100%;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+.chips::-webkit-scrollbar{display:none}
+.chips .chip{flex:none;min-width:calc(50% - 5px);scroll-snap-align:end}
 .chip{background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:10px 14px;font-family:var(--mono);font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip i{font-style:normal;color:var(--paper-muted)}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;padding-bottom:6px}
-.tile{position:relative;aspect-ratio:1.2;border-radius:20px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:clamp(28px,8vw,40px);letter-spacing:-.02em;display:grid;place-items:center;transition:transform .08s,box-shadow .08s;font-variant-numeric:tabular-nums;animation:tilein .22s ease-out}
+.tiles.many{grid-template-columns:repeat(5,1fr);gap:10px}
+.tile{position:relative;aspect-ratio:1.25;border-radius:20px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:clamp(28px,8vw,40px);letter-spacing:-.02em;display:grid;place-items:center;transition:transform .08s,box-shadow .08s;font-variant-numeric:tabular-nums;animation:tilein .22s ease-out}
 .tile:active{transform:translateY(4px);box-shadow:0 3px 0 var(--tile-shade)}
 .tile.der{color:var(--amber-ink)}
 .tile.sel{background:var(--amber);color:var(--on-accent);box-shadow:0 0 0 4px var(--ink),0 7px 0 4px var(--amber-shade)}
@@ -187,7 +210,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .tile.sel .k{color:var(--on-accent)}
 @keyframes tilein{from{transform:scale(.85);opacity:.4}}
 .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;margin-top:auto}
-.op{height:76px;border-radius:40px;font-size:30px;font-weight:800;display:grid;place-items:center}
+.op{height:64px;border-radius:40px;font-size:30px;font-weight:800;display:grid;place-items:center}
 .op.on{box-shadow:0 0 0 4px var(--ink) inset,0 6px 0 var(--pink-shade)}
 .gside{display:flex;flex-direction:column;gap:14px;min-width:0}
 .receipt{position:relative;background:var(--paper);color:var(--paper-ink);border-radius:8px 8px 0 0;padding:20px 24px 18px;margin-bottom:10px}
@@ -210,12 +233,12 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .acts button:disabled{opacity:.45;cursor:not-allowed}
 .finish{height:66px;font-size:20px;width:100%}
 .kbd{font-family:var(--mono);font-size:13px;color:var(--faint);text-align:center;line-height:1.6;margin:0}
-.mbar{display:grid;grid-template-columns:repeat(3,58px) 1fr;gap:12px}
-.mbar .ib{height:62px;border-radius:16px;display:grid;place-items:center}
+.mbar{display:grid;grid-template-columns:repeat(3,56px) 1fr;gap:10px}
+.mbar .ib{height:58px;border-radius:16px;display:grid;place-items:center}
 .mbar .ib svg{width:24px;height:24px}
 .mbar .ib.hintb{color:var(--lime-ink)}
 .mbar .ib:disabled{opacity:.45}
-.mbar .finish{height:62px;font-size:19px}
+.mbar .finish{height:58px;font-size:18px;white-space:nowrap}
 .gside .rail-desk{display:none}
 .paused .tiles,.paused .live,.paused .ring .tgt,.paused .chips{filter:blur(14px);pointer-events:none}
 
@@ -229,7 +252,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .gside .rail-desk{display:flex;flex-direction:column;gap:14px}
   .gside{justify-content:flex-start}
   .gside .bottom{margin-top:auto;display:flex;flex-direction:column;gap:14px}
-  .tiles{grid-template-columns:repeat(auto-fit,minmax(90px,104px));justify-content:center;padding-bottom:24px}
+  .tiles,.tiles.many{grid-template-columns:repeat(auto-fit,minmax(90px,104px));justify-content:center;padding-bottom:24px}
   .tile{aspect-ratio:1}
   .tile .k{display:block}
   .tile.sel::after{content:"seçili";position:absolute;bottom:-30px;font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:0}
@@ -240,7 +263,11 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 }
 
 /* ---------- result ---------- */
-.result{display:grid;gap:22px;width:100%;max-width:1100px;margin:0 auto;padding:32px 20px calc(24px + env(safe-area-inset-bottom,0px));flex:1;align-content:start}
+.result{display:flex;flex-direction:column;gap:22px;width:100%;max-width:1100px;margin:0 auto;padding:32px 20px calc(20px + env(safe-area-inset-bottom,0px));flex:1}
+.result .r-left{display:flex;flex-direction:column;gap:20px}
+.result .rbtns{margin-top:auto;padding-top:8px}
+.receipt .rh span{white-space:nowrap}
+@media (max-width:380px){.receipt{padding:18px 18px 16px}.receipt h3{font-size:21px}.rrow{font-size:16px}}
 .result .eyebrow.lime{color:var(--lime-ink)} .result .eyebrow.amber{color:var(--amber-ink)}
 .result h1{font-size:clamp(64px,19vw,104px);font-weight:800;line-height:.88;letter-spacing:-.055em;margin-top:8px}
 .result .lead{font-size:19px;margin-top:6px}
@@ -255,16 +282,17 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .paperwrap .tot{display:flex;justify-content:space-between;align-items:center;padding-top:18px}
 .paperwrap .tot span{color:var(--paper-muted);font-weight:600}
 .paperwrap .tot b{font-family:var(--display);font-size:46px;font-weight:800;letter-spacing:-.04em}
-.rbtns{display:grid;grid-template-columns:1fr 1.8fr;gap:14px}
+.rbtns{display:grid;grid-template-columns:1fr 1.8fr;gap:12px}
 .rbtns.stack{grid-template-columns:1fr}
 .rstats{display:none;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:16px}
 .rstats span{display:block;color:var(--paper-muted);font-weight:600;font-size:15px}
 .rstats b{font-family:var(--mono);font-weight:800;font-size:20px}
 .rbtns button{min-height:64px;font-size:20px}
 @media (min-width:920px){
-  .result{grid-template-columns:1fr 1fr;column-gap:80px;align-content:center;padding:48px 48px}
-  .result .r-left{display:flex;flex-direction:column;gap:22px;align-self:center}
-  .result .r-right{grid-row:span 2;align-self:center}
+  .result{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"left right" "btns right";grid-template-rows:auto auto;column-gap:80px;row-gap:28px;align-content:center;padding:48px 48px}
+  .result .r-left{grid-area:left;align-self:end}
+  .result .r-right{grid-area:right;align-self:center}
+  .result .rbtns{grid-area:btns;align-self:start;margin-top:0;padding-top:0}
   .rbtns{grid-template-columns:auto auto;justify-content:start}
   .rbtns .nextb{order:-1}
   .win-stats{display:none}
@@ -277,7 +305,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 
 /* ---------- summary ---------- */
 .sumlist{background:var(--surface);border-radius:20px;padding:6px 18px}
-.sumlist div{display:grid;grid-template-columns:44px 1fr auto auto;gap:12px;padding:12px 0;font-family:var(--mono);font-weight:600;align-items:center}
+.sumlist div{display:grid;grid-template-columns:34px 1fr auto auto;gap:10px;font-size:15px;white-space:nowrap;padding:12px 0;font-family:var(--mono);font-weight:600;align-items:center}
 .sumlist div + div{border-top:1px solid var(--line)}
 .sumlist i{font-style:normal;color:var(--muted)}
 .sumlist .p{min-width:70px;text-align:right}
@@ -287,7 +315,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .sbox{background:var(--surface);border-radius:24px;padding:4px 22px}
 .srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;min-height:76px}
 .srow + .srow{border-top:1px solid var(--line)}
-.srow .lb{font-weight:700;font-size:19px}
+.srow .lb{font-weight:700;font-size:19px;min-width:0}
+@media (max-width:420px){.srow .lb{font-size:17px}.seg button{padding:9px 11px;font-size:15px}.sbox{padding:4px 18px}}
 .srow .lb small{display:block;color:var(--muted);font-weight:500;font-size:15px}
 .seg{display:flex;background:var(--bg);border-radius:14px;padding:5px;gap:2px;flex:none}
 .seg button{padding:10px 14px;border-radius:10px;font-weight:700;color:var(--muted);font-size:16px}
@@ -326,8 +355,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .bars .bc.last .bv{color:var(--lime-ink);font-weight:700}
 .blabels{display:flex;gap:8px;margin-top:10px}
 .blabels span{flex:1;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);min-width:0;overflow:hidden}
-.stack{display:flex;height:26px;border-radius:13px;overflow:hidden;gap:3px;background:var(--bg)}
-.stack i{display:block}
+.closebar{display:flex;height:26px;border-radius:13px;overflow:hidden;gap:3px;background:var(--bg)}
+.closebar i{display:block}
 .legend{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin-top:16px}
 .legend div{display:flex;align-items:center;gap:10px;font-weight:600}
 .legend .sw{width:16px;height:16px;border-radius:4px;flex:none}
@@ -336,7 +365,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .opsuse .oc{width:72px;height:72px;border-radius:50%;background:var(--tile);display:grid;place-items:center;margin:0 auto 10px;font-size:26px;font-weight:800;max-width:100%}
 .opsuse .oc.top{background:var(--pink);color:var(--on-accent)}
 .opsuse b{font-family:var(--display);font-size:22px;font-weight:800}
-.empty{text-align:center;color:var(--muted);padding:30px 10px;line-height:1.5}
+.emptystate{text-align:center;color:var(--muted);padding:30px 10px;line-height:1.5}
 
 /* ---------- sheet ---------- */
 .scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:end center;z-index:60;padding:16px;animation:fade .15s}
@@ -635,14 +664,16 @@ function resetBoard() {
 function useHint() {
   if (G.over) return;
   const left = S.settings.hints - G.hintsUsed;
+  if (G.hint && !G.hint.free) { showHintSheet(); return; }
   if (left <= 0) { sfx.err(); toast("İpucu hakkın bitti."); return; }
   const live = liveTiles().map(t => t.v), sol = solve(live, G.ctx.current.target);
-  if (!sol) { sfx.err(); G.hint = { text: "Bu sayılarla hedefe tam ulaşılamıyor. Bir adım geri alıp başka bir yol dene.", free: true }; renderGame(); return; }
+  if (!sol) { sfx.err(); G.hint = { text: "Bu sayılarla hedefe tam ulaşılamıyor. Bir adım geri alıp başka bir yol dene.", free: true }; renderGame(); showHintSheet(); return; }
   G.hintsUsed++;
   const s = sol[0];
   G.hint = { text: sol.length === 1 ? `Son adım: ${s.a} ${OPSYM[s.op]} ${s.b} = ${s.r}.` : `Kalan sayılardan ${s.a} ile ${acc(s.b)} birleştirip ${s.r} elde etmeyi dene.` };
-  sfx.op(); renderGame();
+  sfx.op(); renderGame(); showHintSheet();
 }
+function showHintSheet() { if (matchMedia("(max-width:919px)").matches && G.hint) { S.sheet = { type: "hint" }; render(); } }
 function closestValue() {
   const t = G.ctx.current.target;
   return liveTiles().reduce((best, x) => Math.abs(x.v - t) < Math.abs(best.v - t) ? x : best).v;
@@ -715,7 +746,7 @@ function render() {
   const app = $("#app");
   const fn = { login: vLogin, home: vHome, setup: vSetup, game: vGame, result: vResult, summary: vSummary, settings: vSettings, stats: vStats }[S.screen];
   app.innerHTML = fn() + (S.sheet ? vSheet() : "");
-  if (S.screen === "game") paintTimer();
+  if (S.screen === "game") { paintTimer(); const ch = $(".chips"); if (ch) ch.scrollLeft = ch.scrollWidth; }
   const f = document.querySelector("[autofocus]"); if (f) f.focus();
 }
 function renderGame() { if (S.screen === "game") render(); }
@@ -804,7 +835,7 @@ function vGame() {
       ${sel ? `<span class="lv a">${sel.v}</span>` : `<span class="lv slot">sayı seç</span>`}
       <span class="lop ${G.op ? "" : "empty"}">${G.op ? OPSYM[G.op] : "?"}</span>
       <span class="lv slot">sayı seç</span>
-      ${sel ? `<span class="fark">= fark <b>${diff}</b></span>` : ""}
+      ${sel ? `<span class="fark"><span class="eq">= </span>fark <b>${diff}</b></span>` : ""}
     </div>`;
   const rows = G.steps.map((s, i) => `<div class="rrow"><span><i>${i + 1}.</i>${s.a} ${OPSYM[s.op]} ${s.b}</span><b>${s.r}</b></div>`).join("");
   const pend = sel && G.op ? `<div class="rrow pend"><span><i>${G.steps.length + 1}.</i>${sel.v} ${OPSYM[G.op]} …</span><b>?</b></div>` : "";
@@ -836,12 +867,12 @@ function vGame() {
     </header>
     <main class="gmain">
       ${ring}${liveBar}${chips}
-      <div class="tiles">${tiles}</div>
+      <div class="tiles ${live.length + used.filter(t => !t.der).length > 8 ? "many" : ""}">${tiles}</div>
       <div class="ops">${["+", "-", "*", "/"].map(o => `<button class="b3 b-pink op ${G.op === o ? "on" : ""}" data-a="op" data-v="${o}" aria-label="${OPSYM[o]}">${OPSYM[o]}</button>`).join("")}</div>
     </main>
     <aside class="gside">
       <div class="rail-desk">${receipt}${hint}</div>
-      ${hint ? `<div class="mhint">${hint}</div>` : ""}
+      
       <div class="bottom rail-desk">
         <div class="acts">
           <button class="b3 b-tile" data-a="undo" ${G.steps.length ? "" : "disabled"}>Geri al</button>
@@ -869,7 +900,7 @@ function vResult() {
   if (l.diff === 0) {
     return `<div class="result">
       <div class="r-left">
-        <div><div class="eyebrow lime">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.steps} adımda</div>
+        <div class="r-title"><div class="eyebrow lime">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.steps} adımda</div>
         <h1>Tam<br>isabet!</h1>
         <p class="lead">${acc(l.target)} tam tutturdun. ${l.streakUp ? `Serin ${l.streakUp} güne çıktı.` : "Sıradaki tur seni bekliyor."}</p></div>
         <div class="statrow win-stats">
@@ -877,17 +908,17 @@ function vResult() {
           <div class="stat"><small>İpucu</small><b>${l.hints}</b></div>
           <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
         </div>
-        <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime nextb" data-a="next">${nextLabel}</button></div>
       </div>
       <div class="r-right paperwrap"><div class="receipt"><div class="rh"><h3>Çözüm fişi</h3><span>${date}</span></div>${receiptRows(l.stepsList)}
         <div class="tot"><span>Hedef</span><b>${l.target}</b></div>
         <div class="rstats"><div><span>Süre</span><b>${fmtT(l.time)}</b></div><div><span>İpucu</span><b>${l.hints}</b></div><div><span>Puan</span><b>+${fmt(l.pts)}</b></div></div></div></div>
+      <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime nextb" data-a="next">${nextLabel}</button></div>
     </div>`;
   }
   const sol = solve(c.current.nums, c.current.target) || c.current.solution;
   return `<div class="result">
     <div class="r-left">
-      <div><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : "En yakınla bitti"}</div>
+      <div class="r-title"><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : "En yakınla bitti"}</div>
       <h1>${l.diff} kala<br>durdun.</h1></div>
       <div class="cmp"><div><small>Senin sonucun</small><div class="bx a">${l.value}</div></div><div class="arr">→</div><div><small>Hedef</small><div class="bx t">${l.target}</div></div></div>
       <div class="statrow">
@@ -895,9 +926,9 @@ function vResult() {
         <div class="stat"><small>Süre</small><b>${fmtT(l.time)}</b></div>
         <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
       </div>
-      <div class="rbtns stack"><button class="b3 b-lime" data-a="next">${nextLabel}</button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
     </div>
     <div class="r-right"><div class="receipt"><div class="rh"><h3>Mümkün olan çözüm</h3><span>${sol.length} ADIM</span></div>${receiptRows(sol)}</div></div>
+    <div class="rbtns stack"><button class="b3 b-lime" data-a="next">${nextLabel}</button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
   </div>`;
 }
 function vSummary() {
@@ -954,7 +985,7 @@ function vStats() {
   const prev = span === Infinity ? null : S.history.filter(h => h.t >= from - span * day && h.t < from);
   const tabs = `<div class="seg" role="tablist">${[["hafta", "Hafta"], ["ay", "Ay"], ["tumu", "Tümü"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div>`;
   const head = `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>Rapor</h1><span class="spacer"></span>${tabs}</div>`;
-  if (!H.length) return `<div class="col">${head}<div class="panel empty"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
+  if (!H.length) return `<div class="col">${head}<div class="panel emptystate"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
   const total = H.reduce((a, h) => a + h.pts, 0), exact = H.filter(h => h.diff === 0);
   let change = "";
   if (prev && prev.length) { const pt = prev.reduce((a, h) => a + h.pts, 0); const ch = pt ? Math.round((total - pt) / pt * 100) : 0; change = `${ch >= 0 ? "▲" : "▼"} %${Math.abs(ch)} önceki ${p === "hafta" ? "haftaya" : "aya"} göre`; }
@@ -993,7 +1024,7 @@ function vStats() {
     </div>
     <div class="panel"><div class="ph"><h3>${p === "tumu" ? "Haftalık puan" : "Günlük puan"}</h3><span>${label}</span></div>${bars}</div>
     <div class="panel"><div class="ph"><h3>Hedefe ne kadar yaklaştın</h3></div>
-      <div class="stack">${grp.filter(g => g[1]).map(g => `<i style="flex:${g[1]};background:${g[2]}"></i>`).join("")}</div>
+      <div class="closebar">${grp.filter(g => g[1]).map(g => `<i style="flex:${g[1]};background:${g[2]}"></i>`).join("")}</div>
       <div class="legend">${grp.map(g => `<div><span class="sw" style="background:${g[2]}"></span>${g[0]}<b>%${pc(g[1])}</b></div>`).join("")}</div></div>
     <div class="panel"><div class="ph"><h3>En çok kullandığın işlem</h3><span>ipucu: ${hints} kez</span></div>
       <div class="opsuse">${order.map((k, i) => `<div><div class="oc ${i === 0 && opsT[k] ? "top" : ""}">${OPSYM[k]}</div><b>%${Math.round(opsT[k] / opsSum * 100)}</b></div>`).join("")}</div></div>
@@ -1005,7 +1036,7 @@ function vSheet() {
   if (sh.type === "howto") body = `<h2>Nasıl oynanır</h2>
     <ol><li><b>Bir sayı seç</b>, sonra bir <b>işlem</b> seç (+ − × ÷).</li><li><b>İkinci sayıyı seç</b>; sonuç yeni bir kart olur ve tekrar kullanılabilir.</li><li>Her sayıyı <b>yalnızca bir kez</b> kullanabilirsin. Sonuçlar pozitif tam sayı olmalı.</li><li>Hedefi tam tutturursan tur biter. Tutturamazsan en yakın sayıyla <b>bitir</b>.</li></ol>
     <p>Tam isabet 1.000 puan. Süreli modda kalan süreye göre 300 puana kadar hız bonusu var. Hedefe 1–5 yaklaşmak 500–200 puan getirir. Her ipucu 150 puan düşürür.</p>
-    <button class="b3 b-lime one" data-a="close" autofocus>Anladım</button>`;
+    <button class="b3 b-lime one" data-a="close">Anladım</button>`;
   else if (sh.type === "auth") body = `<h2>${esc(sh.via)} ile devam et</h2>
     <p>Bu sürümde hesaplar yalnızca bu cihazda tutulur. Adını yaz, skorların bu isimle kaydedilsin.</p>
     <form id="authform" style="display:contents">
@@ -1014,9 +1045,9 @@ function vSheet() {
       <div class="row"><button type="button" class="b3 b-tile" data-a="close">Vazgeç</button><button type="submit" class="b3 b-lime">${sh.edit ? "Kaydet" : "Devam et"}</button></div>
     </form>`;
   else if (sh.type === "reset") body = `<h2>İlerlemeyi sıfırla</h2><p>Tüm turların, serin, en iyi skorun ve yarım kalan oyunun silinir. Bu geri alınamaz.</p>
-    <div class="row"><button class="b3 b-tile" data-a="close" autofocus>Vazgeç</button><button class="b3 b-pink" data-a="doreset">Sıfırla</button></div>`;
+    <div class="row"><button class="b3 b-tile" data-a="close">Vazgeç</button><button class="b3 b-pink" data-a="doreset">Sıfırla</button></div>`;
   else if (sh.type === "quit") body = `<h2>Turdan çık</h2><p>${G.ctx.kind === "game" ? "Oyunun kaydedildi. Ana sayfadan Tur " + G.ctx.round + "'ten devam edebilirsin; bu tur baştan başlar." : "Günün bulmacasını istediğin zaman yeniden açabilirsin."}</p>
-    <div class="row"><button class="b3 b-tile" data-a="close" autofocus>Oyuna dön</button><button class="b3 b-pink" data-a="doquit">Çık</button></div>`;
+    <div class="row"><button class="b3 b-tile" data-a="close">Oyuna dön</button><button class="b3 b-pink" data-a="doquit">Çık</button></div>`;
   else if (sh.type === "gmenu") body = `<h2>Menü</h2>
     <button class="mi" data-a="pause">${I.pause}Duraklat</button>
     <button class="mi" data-a="sound">${S.settings.sfx ? I.mute : I.sound}Sesi ${S.settings.sfx ? "kapat" : "aç"}</button>
@@ -1025,7 +1056,8 @@ function vSheet() {
     <button class="mi" data-a="quit">${I.exit}Turdan çık</button>
     <button class="b3 b-lime one" data-a="close">Oyuna dön</button>`;
   else if (sh.type === "share") body = `<h2>Sonucu paylaş</h2><p>Metni seçip kopyala.</p><textarea id="sharetxt" readonly style="width:100%;min-height:160px;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;font-family:var(--mono);font-size:15px">${esc(sh.text)}</textarea><button class="b3 b-lime one" data-a="close">Tamam</button>`;
-  else if (sh.type === "legal") body = `<h2>Koşullar ve gizlilik</h2><p>hedef. skorlarını ve ayarlarını yalnızca bu cihazdaki tarayıcı depolamasında tutar. Hiçbir veri bir sunucuya gönderilmez.</p><button class="b3 b-lime one" data-a="close" autofocus>Tamam</button>`;
+  else if (sh.type === "hint") body = `<div class="hh" style="display:flex;justify-content:space-between"><h2 class="c-lime">İpucu</h2><span style="font-family:var(--mono);color:var(--muted)">${G.hint.free ? "ücretsiz" : "−150 puan"}</span></div><p style="color:var(--ink);font-size:19px">${esc(G.hint.text)}</p><button class="b3 b-lime one" data-a="close">Tamam</button>`;
+  else if (sh.type === "legal") body = `<h2>Koşullar ve gizlilik</h2><p>hedef. skorlarını ve ayarlarını yalnızca bu cihazdaki tarayıcı depolamasında tutar. Hiçbir veri bir sunucuya gönderilmez.</p><button class="b3 b-lime one" data-a="close">Tamam</button>`;
   return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
 }
 
