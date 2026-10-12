@@ -467,10 +467,13 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .dstats .bars .bv{font-size:14px}
 .dstats .blabels span{font-size:15px}
 .rhead{display:none}
+.rback{display:inline-flex;align-items:center;gap:4px;align-self:flex-start;margin:16px 0 -12px 12px;padding:10px 14px 10px 8px;border-radius:12px;background:var(--surface);color:var(--muted);font-weight:700;font-size:16px}
+.rback svg{width:18px;height:18px}
 .rnote{color:var(--paper-muted);font-size:15px;line-height:1.45;margin:16px 0 4px}
 .dk-only{display:none}
 .nokeys .kbd,.nokeys .tile .k{display:none!important}
 @media (min-width:920px){
+  .rpage .rback{display:none}
   .rpage .rhead{display:flex;width:100%;max-width:1200px;margin:0 auto;padding:28px 40px 0}
   .rpage .rhead .gmeta{display:flex}
   .rpage .rhead .backb{display:grid}
@@ -514,7 +517,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.5";
+const APP_VERSION = "1.6";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -843,6 +846,16 @@ function nextRound() {
   }
   c.round++; c.last = null; newRound(c); saveSession(); playRound(c);
 }
+function leaveResult() {
+  const c = G && G.ctx;
+  if (c && c.kind === "game" && c.last) {
+    if (c.round >= c.total) {
+      if (c.score > S.best) { S.best = c.score; store.set("best", S.best); }
+      S.session = null; store.del("session");
+    } else { c.round++; c.last = null; newRound(c); saveSession(); }
+  }
+  G = null; go("home");
+}
 function retryRound() {
   const c = G.ctx; c.score -= c.last.pts; c.rounds.pop(); c.last = null;
   if (c.kind === "game") saveSession();
@@ -1022,6 +1035,16 @@ function vGame() {
     ${G.paused ? `<div class="pauseov"><div class="card"><h2 style="font-size:32px">Duraklatıldı</h2><p class="c-muted" style="margin:0">Sayılar gizlendi, süre durdu.</p><button class="b3 b-lime big" data-a="pause" autofocus>Devam et</button></div></div>` : ""}
   </div>`;
 }
+function resultHead(c) {
+  const L = LEVELS[c.level];
+  return `<button class="rback" data-a="rhome">${I.back}Ana sayfa</button>
+    <header class="ghead rhead">
+      <button class="iconbtn backb" data-a="rhome" aria-label="Ana sayfa">${I.back}</button>
+      ${logo()}
+      <span class="pill"><span class="dk">${c.kind === "daily" ? "Günün bulmacası" : (c.mode === "sureli" ? "Süreli" : "Serbest")} · </span><em>${L.name}</em></span>
+      <div class="gmeta"><span>Tur <b>${c.round}</b>/${c.total}</span><span>Puan <b class="num">${fmt(c.score)}</b></span></div>
+    </header>`;
+}
 // A solution that keeps as much of the player's own path as possible, plus a one-line note.
 function pathSolution(cur, steps) {
   const ORD = ["", "ilk", "ikinci", "üçüncü", "dördüncü", "beşinci"];
@@ -1049,7 +1072,7 @@ function vResult() {
   const nextLabel = c.kind === "daily" ? "Ana sayfaya dön" : last ? "Sonuçları gör" : "Sonraki tur";
   const d = new Date(), date = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
   if (l.diff === 0) {
-    return `<div class="result">
+    return `<div class="rpage">${resultHead(c)}<div class="result">
       <div class="r-left">
         <div class="r-title"><div class="eyebrow lime">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.steps} adımda</div>
         <h1>Tam<br>isabet!</h1>
@@ -1064,17 +1087,11 @@ function vResult() {
         <div class="tot"><span>Hedef</span><b>${l.target}</b></div>
         <div class="rstats"><div><span>Süre</span><b>${fmtT(l.time)}</b></div><div><span>İpucu</span><b>${l.hints}</b></div><div><span>Puan</span><b>+${fmt(l.pts)}</b></div></div></div></div>
       <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime nextb" data-a="next">${nextLabel}</button></div>
-    </div>`;
+    </div></div>`;
   }
   if (!l.path) l.path = pathSolution(c.current, l.stepsList);
-  const sol = l.path.steps, L = LEVELS[c.level];
-  const rhead = `<header class="ghead rhead">
-      <button class="iconbtn backb" data-a="go" data-v="home" aria-label="Ana sayfa">${I.back}</button>
-      ${logo()}
-      <span class="pill"><span class="dk">${c.kind === "daily" ? "Günün bulmacası" : (c.mode === "sureli" ? "Süreli" : "Serbest")} · </span><em>${L.name}</em></span>
-      <div class="gmeta"><span>Tur <b>${c.round}</b>/${c.total}</span><span>Puan <b class="num">${fmt(c.score)}</b></span></div>
-    </header>`;
-  return `<div class="rpage">${rhead}<div class="result fail">
+  const sol = l.path.steps;
+  return `<div class="rpage">${resultHead(c)}<div class="result fail">
     <div class="r-left">
       <div class="r-title"><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : "En yakınla bitti"}</div>
       <h1>${l.diff} kala<br>durdun.</h1></div>
@@ -1405,6 +1422,7 @@ const A = {
   gmenu: () => { S.sheet = { type: "gmenu" }; render(); },
   quit: () => { S.sheet = { type: "quit" }; render(); },
   doquit: () => { clearInterval(timerId); G = null; go("home"); },
+  rhome: () => leaveResult(),
   next: () => nextRound(), retry: () => retryRound(), share: () => share(),
   sback: () => { const b = S.back || "home"; S.back = null; if (b === "game" && G) { go("game"); startTimer(); } else go(b === "settings" ? "home" : b); },
   sset: (v, el) => { const k = el.dataset.k; S.settings[k] = ["duration", "count"].includes(k) ? Number(v) : v; saveSettings(); if (k === "theme") applyTheme(); render(); },
