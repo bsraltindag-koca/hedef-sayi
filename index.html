@@ -538,6 +538,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .dhome .resume small{font-size:14px}
 .dhome .resume{margin-top:22px}
 .startgrp{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.leftcap{margin:-6px 0 -4px;color:var(--muted);font-size:13px;text-align:center}
+.leftcap b{color:var(--ink)}
 .rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
 .cslider{display:flex;flex-direction:column;gap:10px;width:100%}
 .cs-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -610,7 +612,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "3.3";
+const APP_VERSION = "3.4";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -733,54 +735,57 @@ function pickNumbers(count, large, rng) {
   return sm.sort((a, b) => a - b).concat(out.sort((a, b) => a - b));
 }
 function flatten(node) { return node.src ? [...flatten(node.src.a), ...flatten(node.src.b), { a: node.src.a.v, op: node.src.op, b: node.src.b.v, r: node.v }] : []; }
+// Every puzzle is built by combining all of its numbers, so the target is always reachable using each number once.
 function genRound(lv, count, rng) {
-  const L = LEVELS[lv], need = Math.min(L.steps, count - 1), ops = ["+", "-", "*", "/"];
-  let fallback = null;
-  for (let attempt = 0; attempt < 6000; attempt++) {
+  const L = LEVELS[lv], ops = ["+", "-", "*", "/"];
+  let fallback = null, bestGap = Infinity;
+  for (let attempt = 0; attempt < 30000; attempt++) {
     const nums = pickNumbers(count, L.large, rng);
     let pool = nums.map(v => ({ v, src: null })), fails = 0;
-    while (pool.length > 1 && fails < 40) {
+    while (pool.length > 1 && fails < 60) {
       const i = Math.floor(rng() * pool.length); let j = Math.floor(rng() * (pool.length - 1)); if (j >= i) j++;
       let A = pool[i], B = pool[j];
-      const op = L.div && rng() < .35 ? "/" : ops[Math.floor(rng() * 4)];
+      // steer toward the level's range: shrink big values, grow small ones
+      const big = A.v + B.v > L.max * 1.5, small = pool.length <= 2 && A.v + B.v < L.min;
+      const op = L.div && rng() < .3 ? "/" : big ? (rng() < .55 ? "-" : rng() < .5 ? "/" : ops[Math.floor(rng() * 4)]) : small ? "*" : ops[Math.floor(rng() * 4)];
       if (A.v < B.v && (op === "-" || op === "/")) [A, B] = [B, A];
       const r = calc(A.v, op, B.v, true);
-      if (r == null || r > 3000) { fails++; continue; }
-      const node = { v: r, src: { a: A, b: B, op } };
-      pool = pool.filter(p => p !== A && p !== B); pool.push(node);
-      if (r >= L.min && r <= L.max && !nums.includes(r)) {
-        const sol = flatten(node);
-        const ok = sol.length >= need && (!L.div || sol.some(s => s.op === "/"));
-        if (ok && rng() < .7) return { nums, target: r, solution: sol };
-        if (sol.length >= need - 1 && !fallback) fallback = { nums, target: r, solution: sol };
-      }
+      if (r == null || r > 5000) { fails++; continue; }
+      pool = pool.filter(p => p !== A && p !== B); pool.push({ v: r, src: { a: A, b: B, op } });
     }
+    if (pool.length !== 1) continue;
+    const root = pool[0], r = root.v, sol = flatten(root);
+    const okDiv = !L.div || sol.some(st => st.op === "/");
+    if (r >= L.min && r <= L.max && !nums.includes(r) && okDiv) return { nums, target: r, solution: sol };
+    const gap = r < L.min ? L.min - r : r > L.max ? r - L.max : 0;
+    if (gap < bestGap && !nums.includes(r) && r > 0) { bestGap = gap; fallback = { nums, target: r, solution: sol }; }
   }
-  return fallback || { nums: [2, 5, 7, 10, 25, 50], target: 487, solution: [{ a: 50, op: "*", b: 10, r: 500 }, { a: 500, op: "-", b: 25, r: 475 }, { a: 7, op: "+", b: 5, r: 12 }, { a: 475, op: "+", b: 12, r: 487 }] };
+  return fallback;
 }
-// Shortest-first search from the current board, bounded so the UI never stalls.
+// Depth-first search that only accepts paths using every number; bounded so the UI never stalls.
 function solve(vals, target, limit = 600000) {
-  if (vals.includes(target)) return [];
+  solve.aborted = false;
+  if (vals.length === 1) return vals[0] === target ? [] : null;
   let nodes = 0, found = null;
-  const path = [];
-  function dfs(arr, depth) {
+  const path = [], seen = new Set();
+  function dfs(arr) {
     if (++nodes > limit) return true;
+    if (arr.length === 1) { if (arr[0] === target) { found = path.slice(); return true; } return false; }
+    const key = arr.slice().sort((x, y) => x - y).join(",");
+    if (seen.has(key)) return false; seen.add(key);
     for (let i = 0; i < arr.length; i++) for (let j = i + 1; j < arr.length; j++) {
       const a = Math.max(arr[i], arr[j]), b = Math.min(arr[i], arr[j]);
       for (const op of ["+", "*", "-", "/"]) {
         const r = calc(a, op, b, true); if (r == null || r === 0) continue;
         path.push({ a, op, b, r });
-        if (r === target) { found = path.slice(); return true; }
-        if (depth > 1) {
-          const next = arr.filter((_, k) => k !== i && k !== j); next.push(r);
-          if (dfs(next, depth - 1)) return true;
-        }
+        const next = arr.filter((_, k) => k !== i && k !== j); next.push(r);
+        if (dfs(next)) return true;
         path.pop();
       }
     }
     return false;
   }
-  for (let d = 1; d < vals.length && !found && nodes <= limit; d++) dfs(vals, d);
+  dfs(vals);
   solve.aborted = !found && nodes > limit;
   return found;
 }
@@ -881,7 +886,9 @@ function combine(aId, op, bId) {
   G.sel = id; G.op = null; G.hint = null;
   sfx.combine(); buzz(15);
   renderGame();
-  if (r === G.ctx.current.target) { G.over = true; setTimeout(() => finishRound(false), 420); }
+  const left = liveTiles().length;
+  if (left === 1) { G.over = true; setTimeout(() => finishRound(false), 420); }
+  else if (r === G.ctx.current.target) toast(`Hedefe ulaştın ama ${left - 1} sayı daha kullanmalısın.`);
 }
 function undo() {
   if (G.over) return;
@@ -916,6 +923,8 @@ function closestValue() {
   return liveTiles().reduce((best, x) => Math.abs(x.v - t) < Math.abs(best.v - t) ? x : best).v;
 }
 function finishValue() { return G.sel !== null ? tileById(G.sel).v : closestValue(); }
+// A round counts as exact only when the target is hit and no number is left over.
+const isExact = h => h.diff === 0 && !h.inc;
 function streakInfo(hist) {
   const days = [...new Set(hist.map(h => h.d))].sort();
   let best = 0, run = 0, prev = null;
@@ -929,22 +938,23 @@ function finishRound(timeout) {
   if (!G) return;
   G.over = true; clearInterval(timerId);
   const c = G.ctx, cur = c.current, target = cur.target;
-  const value = G.sel !== null && !timeout ? tileById(G.sel).v : (G.sel !== null ? tileById(G.sel).v : closestValue());
+  const live = liveTiles(), inc = live.length - 1;
+  const value = inc === 0 ? live[0].v : (G.sel !== null ? tileById(G.sel).v : closestValue());
   const diff = Math.abs(target - value), time = G.elapsed;
-  let pts = diff === 0 ? 1000 : diff <= 5 ? 500 - (diff - 1) * 75 : diff <= 10 ? 250 : diff <= 20 ? 100 : 0;
-  if (diff === 0 && c.mode === "sureli") pts += Math.round(300 * Math.max(0, c.duration - time) / c.duration);
+  let pts = inc > 0 ? 0 : diff === 0 ? 1000 : diff <= 5 ? 500 - (diff - 1) * 75 : diff <= 10 ? 250 : diff <= 20 ? 100 : 0;
+  if (inc === 0 && diff === 0 && c.mode === "sureli") pts += Math.round(300 * Math.max(0, c.duration - time) / c.duration);
   pts = Math.max(0, pts - G.hintsUsed * 150);
   const ops = { "+": 0, "-": 0, "*": 0, "/": 0 }; G.steps.forEach(s => ops[s.op]++);
   const before = streakInfo(S.history).cur;
-  const rec = { d: dayKey(), t: Date.now(), target, value, diff, time: Math.round(time), hints: G.hintsUsed, pts, ops, steps: G.steps.length, daily: c.kind === "daily" };
+  const rec = { d: dayKey(), t: Date.now(), target, value, diff, inc, time: Math.round(time), hints: G.hintsUsed, pts, ops, steps: G.steps.length, daily: c.kind === "daily" };
   S.history.push(rec); store.set("history", S.history);
   const after = streakInfo(S.history).cur;
   c.score += pts;
   c.last = { ...rec, timeout, stepsList: G.steps.map(s => ({ a: s.a, op: s.op, b: s.b, r: s.r })), streakUp: after > before ? after : 0 };
-  c.rounds.push({ target, value, diff, pts });
-  if (c.kind === "daily") { S.daily[rec.d] = { value, diff, pts, time: rec.time }; store.set("daily", S.daily); }
+  c.rounds.push({ target, value, diff, inc, pts });
+  if (c.kind === "daily") { S.daily[rec.d] = { value, diff, inc, pts, time: rec.time }; store.set("daily", S.daily); }
   else saveSession();
-  diff === 0 ? (sfx.win(), buzz([30, 40, 30])) : sfx.lose();
+  isExact(rec) ? (sfx.win(), buzz([30, 40, 30])) : sfx.lose();
   go("result");
 }
 function nextRound() {
@@ -974,7 +984,7 @@ function retryRound() {
 function shareText() {
   const c = G.ctx, l = c.last;
   const lines = [`hedef. · Tur ${c.round} · Hedef ${l.target}`, ...l.stepsList.map((s, i) => `${i + 1}. ${s.a} ${OPSYM[s.op]} ${s.b} = ${s.r}`),
-    l.diff === 0 ? `Tam isabet · ${fmtT(l.time)} · +${fmt(l.pts)} puan` : `${l.diff} kala durdum · +${fmt(l.pts)} puan`];
+    isExact(l) ? `Tam isabet · ${fmtT(l.time)} · +${fmt(l.pts)} puan` : l.inc ? `${l.inc} sayı kullanılmadı · +0 puan` : `${l.diff} kala durdum · +${fmt(l.pts)} puan`];
   return lines.join("\n");
 }
 async function share() {
@@ -987,7 +997,7 @@ async function share() {
 function go(screen) {
   if (confettiEl) { confettiEl.remove(); confettiEl = null; }
   S.screen = screen; S.sheet = null; render(); window.scrollTo(0, 0);
-  if (screen === "result" && G && G.ctx.last && G.ctx.last.diff === 0) confetti();
+  if (screen === "result" && G && G.ctx.last && isExact(G.ctx.last)) confetti();
 }
 function render() {
   const app = $("#app");
@@ -1027,7 +1037,7 @@ function vLogin() {
 }
 function vHome() {
   const u = S.user || { name: "Misafir" }, st = streakInfo(S.history);
-  const exact = S.history.filter(h => h.diff === 0).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
+  const exact = S.history.filter(h => isExact(h)).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
   const now = new Date(), done = S.daily[dayKey()];
   const first = u.name.split(" ")[0];
   return `<div class="col home">
@@ -1044,7 +1054,7 @@ function vHome() {
     </button>
     ${resumeBar()}
     <button class="b3 b-amber dailycard" data-a="daily">
-      <div><h3>Günün bulmacası</h3><p>${done ? (done.diff === 0 ? `Bugün çözüldü · +${fmt(done.pts)} puan` : `Bugün ${done.diff} kala bitti · tekrar dene`) : "Herkes aynı sayılarla oynar"}</p></div>
+      <div><h3>Günün bulmacası</h3><p>${done ? (isExact(done) ? `Bugün çözüldü · +${fmt(done.pts)} puan` : `Bugün çözülemedi · tekrar dene`) : "Herkes aynı sayılarla oynar"}</p></div>
       <span class="dt">${now.getDate()} ${MONTHS[now.getMonth()]}</span>
     </button>
     <div class="menu">
@@ -1064,7 +1074,7 @@ function vSetup() {
   return `<div class="col">
     <div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button></div>
     ${logo("xl")}
-    <p class="lead">Sayıları birleştir, hedefi tuttur. Her sayı yalnızca bir kez.</p>
+    <p class="lead">Sayıları birleştir, hedefi tuttur. Tüm sayıları birer kez kullan.</p>
     <div class="eyebrow">Mod</div>
     <button class="b3 mode ${s.mode === "sureli" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="sureli"><span class="radio"></span><div><h3>Süreli</h3><p>Her tur ${fmtT(s.duration).replace(/^0/, "")}. Hız bonusu var.</p></div><span class="rt">${fmtT(s.duration).replace(/^0/, "")}</span></button>
     <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt inf" aria-label="süresiz">∞</span></button>
@@ -1116,7 +1126,7 @@ function vGame() {
       <button class="iconbtn menu-m" data-a="pause" aria-label="Duraklat">${I.pause}</button>
     </header>
     <main class="gmain">
-      ${ring}${liveBar}${chips}
+      ${ring}${liveBar}<p class="leftcap">${live.length > 1 ? `<b>${live.length}</b> kart kaldı · hepsini kullanarak hedefe ulaş` : "Son kart"}</p>${chips}
       <div class="tiles ${(() => { const n = live.length + used.filter(t => !t.der).length; return n > 15 ? "many lots" : n > 8 ? "many" : ""; })()}">${tiles}</div>
       <div class="ops">${["+", "-", "*", "/"].map(o => `<button class="b3 b-pink op ${G.op === o ? "on" : ""}" data-a="op" data-v="${o}" aria-label="${OPSYM[o]}">${OPSYM[o]}</button>`).join("")}</div>
     </main>
@@ -1129,14 +1139,14 @@ function vGame() {
           <button class="b3 b-tile" data-a="reset" ${G.steps.length ? "" : "disabled"}>Sıfırla</button>
           <button class="b3 b-tile hintb" data-a="hint" ${hintsLeft > 0 ? "" : "disabled"}>İpucu · ${hintsLeft}</button>
         </div>
-        <button class="b3 b-lime finish" data-a="finish">${fv} ile bitir ↵</button>
+        <button class="b3 b-lime finish" data-a="finish">Turu bitir ↵</button>
         <p class="kbd">1–${Math.min(9, live.length)} sayı · + − * / işlem · ⌫ geri al<br>R sıfırla · H ipucu · P duraklat</p>
       </div>
       <div class="mbar">
         <button class="b3 b-tile ib" data-a="undo" aria-label="Geri al" ${G.steps.length ? "" : "disabled"}>${I.undo}</button>
         <button class="b3 b-tile ib" data-a="reset" aria-label="Sıfırla" ${G.steps.length ? "" : "disabled"}>${I.reset}</button>
         <button class="b3 b-tile ib hintb" data-a="hint" aria-label="İpucu, ${hintsLeft} hak" ${hintsLeft > 0 ? "" : "disabled"}>${I.bulb}</button>
-        <button class="b3 b-lime finish" data-a="finish">${fv} ile bitir</button>
+        <button class="b3 b-lime finish" data-a="finish">Turu bitir</button>
       </div>
     </aside>
     ${G.paused ? `<div class="pauseov"><div class="card"><h2 style="font-size:32px">Duraklatıldı</h2><p class="c-muted" style="margin:0">Sayılar gizlendi, süre durdu.</p><button class="b3 b-lime big" data-a="pause">Devam et</button>
@@ -1184,7 +1194,7 @@ function vResult() {
   const c = G.ctx, l = c.last, last = c.kind === "daily" || c.round >= c.total;
   const nextLabel = c.kind === "daily" ? "Ana sayfaya dön" : last ? "Sonuçları gör" : "Sonraki tur";
   const d = new Date(), date = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
-  if (l.diff === 0) {
+  if (isExact(l)) {
     return `<div class="rpage">${resultHead(c)}<div class="result">
       <div class="r-left">
         <div class="r-title"><div class="eyebrow lime">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.steps} adımda</div>
@@ -1206,8 +1216,9 @@ function vResult() {
   const sol = l.path.steps;
   return `<div class="rpage">${resultHead(c)}<div class="result fail">
     <div class="r-left">
-      <div class="r-title"><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : "En yakınla bitti"}</div>
-      <h1>${l.diff} kala<br>durdun.</h1></div>
+      <div class="r-title"><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : l.inc ? "Sayılar bitmedi" : "Tüm sayılar kullanıldı"}</div>
+      <h1>${l.inc ? `${l.inc} sayı<br>kaldı.` : `${l.diff} kala<br>durdun.`}</h1>
+      ${l.inc ? `<p class="lead">Kural: tüm sayıları kullanarak hedefe ulaşmalısın. Bu turdan puan alınmadı.</p>` : ""}</div>
       <div class="cmp"><div><small>Senin sonucun</small><div class="bx a">${l.value}</div></div><div class="arr">→</div><div><small>Hedef</small><div class="bx t">${l.target}</div></div></div>
       <div class="statrow">
         <div class="stat"><small>Fark</small><b class="c-amber">${l.diff}</b></div>
@@ -1220,7 +1231,7 @@ function vResult() {
   </div></div>`;
 }
 function vSummary() {
-  const c = S.summary, exact = c.rounds.filter(r => r.diff === 0).length;
+  const c = S.summary, exact = c.rounds.filter(r => isExact(r)).length;
   return `<div class="col">
     <div class="eyebrow" style="color:var(--lime-ink)">${LEVELS[c.level].name} · ${c.mode === "sureli" ? "Süreli" : "Serbest"} · 10 tur</div>
     <h1 style="font-size:clamp(56px,16vw,88px);line-height:.9;letter-spacing:-.05em">Oyun<br>bitti.</h1>
@@ -1230,7 +1241,7 @@ function vSummary() {
       <div class="stat"><small>Tam isabet</small><b>${exact}/10</b></div>
       <div class="stat"><small>En iyi</small><b>${fmt(S.best)}</b></div>
     </div>
-    <div class="sumlist">${c.rounds.map((r, i) => `<div><i>${i + 1}.</i><span>${r.value} → ${r.target}</span><span class="${r.diff ? "c-amber" : "c-lime"}">${r.diff ? r.diff + " fark" : "tam"}</span><span class="p">+${fmt(r.pts)}</span></div>`).join("")}</div>
+    <div class="sumlist">${c.rounds.map((r, i) => `<div><i>${i + 1}.</i><span>${r.value} → ${r.target}</span><span class="${isExact(r) ? "c-lime" : "c-amber"}">${r.inc ? "eksik" : r.diff ? r.diff + " fark" : "tam"}</span><span class="p">+${fmt(r.pts)}</span></div>`).join("")}</div>
     <div class="spacer"></div>
     <button class="b3 b-lime big" data-a="go" data-v="setup">Yeni oyun</button>
     <button class="b3 b-tile big" data-a="go" data-v="home">Ana sayfa</button>
@@ -1277,7 +1288,7 @@ function vStats() {
     ? `${deskNav("stats")}<div class="dhead"><h1>İstatistikler</h1><div class="seg" role="tablist">${[["hafta", "Bu hafta"], ["ay", "Bu ay"], ["tumu", "Tüm zamanlar"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div></div>`
     : `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>İstatistikler</h1><span class="spacer"></span>${tabs}</div>`;
   if (!H.length) return `<div class="${desk ? "dpage" : "col"}">${head}<div class="panel emptystate"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
-  const total = H.reduce((a, h) => a + h.pts, 0), exact = H.filter(h => h.diff === 0);
+  const total = H.reduce((a, h) => a + h.pts, 0), exact = H.filter(h => isExact(h));
   let change = "";
   if (prev && prev.length) { const pt = prev.reduce((a, h) => a + h.pts, 0); const ch = pt ? Math.round((total - pt) / pt * 100) : 0; change = `${ch >= 0 ? "▲" : "▼"} %${Math.abs(ch)} önceki ${p === "hafta" ? "haftaya" : "aya"} göre`; }
   else change = p === "tumu" ? `${S.history.length} turun toplamı` : "önceki dönemde tur yok";
@@ -1300,7 +1311,7 @@ function vStats() {
   const kfmt = v => v >= 1000 ? (v / 1000).toFixed(1).replace(".", ",") + "k" : String(v);
   const bars = `<div class="bars" style="gap:${dense ? 3 : 8}px">${buckets.map((b, i) => `<div class="bc ${i === buckets.length - 1 ? "last" : ""}">${!dense || i === buckets.length - 1 ? `<span class="bv">${b.v ? (desk ? fmt(b.v) : kfmt(b.v)) : ""}</span>` : ""}<div class="bar" style="height:${b.v / max * 82}%" title="${fmt(b.v)} puan"></div></div>`).join("")}</div>
     <div class="blabels" style="gap:${dense ? 3 : 8}px">${buckets.map(b => `<span style="overflow:visible;white-space:nowrap">${b.l}</span>`).join("")}</div>`;
-  const n = H.length, grp = [["Tam isabet", H.filter(h => h.diff === 0).length, "var(--lime)"], ["1–5 fark", H.filter(h => h.diff >= 1 && h.diff <= 5).length, "var(--amber)"], ["6–10 fark", H.filter(h => h.diff >= 6 && h.diff <= 10).length, "var(--pink)"], ["10+ fark", H.filter(h => h.diff > 10).length, "var(--faint)"]];
+  const n = H.length, grp = [["Tam isabet", H.filter(h => isExact(h)).length, "var(--lime)"], ["1–5 fark", H.filter(h => !isExact(h) && h.diff <= 5).length, "var(--amber)"], ["6–10 fark", H.filter(h => h.diff >= 6 && h.diff <= 10).length, "var(--pink)"], ["10+ fark", H.filter(h => h.diff > 10).length, "var(--faint)"]];
   const pc = v => Math.round(v / n * 100);
   const opsT = { "+": 0, "-": 0, "*": 0, "/": 0 }; H.forEach(h => Object.keys(opsT).forEach(k => opsT[k] += h.ops[k] || 0));
   const opsSum = Object.values(opsT).reduce((a, b) => a + b, 0) || 1;
@@ -1325,8 +1336,8 @@ function vSheet() {
   const sh = S.sheet;
   let body = "";
   if (sh.type === "howto") body = `<h2>Nasıl oynanır</h2>
-    <ol><li><b>Bir sayı seç</b>, sonra bir <b>işlem</b> seç (+ − × ÷).</li><li><b>İkinci sayıyı seç</b>; sonuç yeni bir kart olur ve tekrar kullanılabilir.</li><li>Her sayıyı <b>yalnızca bir kez</b> kullanabilirsin. Sonuçlar pozitif tam sayı olmalı.</li><li>Hedefi tam tutturursan tur biter. Tutturamazsan en yakın sayıyla <b>bitir</b>.</li></ol>
-    <p>Tam isabet 1.000 puan. Süreli modda kalan süreye göre 300 puana kadar hız bonusu var. Hedefe 1–5 yaklaşmak 500–200 puan getirir. Her ipucu 150 puan düşürür.</p>
+    <ol><li><b>Bir sayı seç</b>, sonra bir <b>işlem</b> seç (+ − × ÷).</li><li><b>İkinci sayıyı seç</b>; sonuç yeni bir kart olur ve tekrar kullanılabilir.</li><li><b>Tüm sayıları</b> birer kez kullanmalısın. Sonuçlar pozitif tam sayı olmalı.</li><li>Tek kart kalınca tur biter. O kart hedefse tam isabet, değilse farka göre puan alırsın.</li></ol>
+    <p>Tam isabet 1.000 puan. Süreli modda kalan süreye göre 300 puana kadar hız bonusu var. Hedefe 1–5 yaklaşmak 500–200 puan getirir. Sayılar bitmeden turu bitirirsen puan alamazsın. Her ipucu 150 puan düşürür.</p>
     <button class="b3 b-lime one" data-a="close">Anladım</button>`;
   else if (sh.type === "auth") body = `<h2>${esc(sh.via)} ile devam et</h2>
     <p>Bu sürümde hesaplar yalnızca bu cihazda tutulur. Adını yaz, skorların bu isimle kaydedilsin.</p>
@@ -1349,13 +1360,15 @@ function vSheet() {
   else if (sh.type === "share") body = `<h2>Sonucu paylaş</h2><p>Metni seçip kopyala.</p><textarea id="sharetxt" readonly style="width:100%;min-height:160px;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;font-family:var(--mono);font-size:15px">${esc(sh.text)}</textarea><button class="b3 b-lime one" data-a="close">Tamam</button>`;
   else if (sh.type === "hint") body = `<div class="hh" style="display:flex;justify-content:space-between"><h2 class="c-lime">İpucu</h2><span style="font-family:var(--mono);color:var(--muted)">${G.hint.free ? "ücretsiz" : "−150 puan"}</span></div><p style="color:var(--ink);font-size:19px">${esc(G.hint.text)}</p><button class="b3 b-lime one" data-a="close">Tamam</button>`;
   else if (sh.type === "profile") {
-    const u = S.user || { name: "Misafir" }, n = S.history.length, ex = S.history.filter(h => h.diff === 0).length;
+    const u = S.user || { name: "Misafir" }, n = S.history.length, ex = S.history.filter(h => isExact(h)).length;
     const via = u.via === "E-posta" ? "e-posta ile giriş" : u.via ? u.via + " ile giriş" : "misafir hesabı";
     body = `<div class="prof"><span class="avatar">${esc(initials(u.name))}</span><div style="min-width:0"><b>${esc(u.name)}</b><small>${esc(u.email ? u.email + " · " + via : via)}</small></div></div>
     <p>${n ? `${n} tur oynadın, ${ex} tanesinde hedefi tam tutturdun.` : "Henüz tur oynamadın."}</p>
     <button class="mi" data-a="editname">${I.pen}Adını düzenle</button>
     <button class="mi" data-a="logout">${I.exit}Çıkış yap</button>`;
   }
+  else if (sh.type === "giveup") { const n = liveTiles().length - 1; body = `<h2>Turu bitir</h2><p>${n} sayı daha kullanman gerekiyor. Şimdi bitirirsen bu turdan puan alamazsın.</p>
+    <div class="row"><button class="b3 b-tile" data-a="close">Devam et</button><button class="b3 b-pink" data-a="dogiveup">Bitir</button></div>`; }
   else if (sh.type === "legal") body = `<h2>Koşullar ve gizlilik</h2><p>hedef. skorlarını ve ayarlarını yalnızca bu cihazdaki tarayıcı depolamasında tutar. Hiçbir veri bir sunucuya gönderilmez.</p><button class="b3 b-lime one" data-a="close">Tamam</button>`;
   return `<div class="scrim ${sh.type === "profile" ? "pop" : ""}" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
 }
@@ -1393,7 +1406,7 @@ function dLogin() {
         <h1>Sayıları<br>birleştir,<br><span class="c-lime">hedefi tuttur.</span></h1>
         <div class="dl-eq" role="img" aria-label="50 çarpı 10 eşittir 500"><span class="eqt t1">50</span><span class="dop">×</span><span class="eqt t2">10</span><span class="deq">=</span><span class="eqt res">500</span></div>
       </div>
-      <p class="c-muted" style="margin:0;font-size:17px">Her gün yeni bir hedef. Her sayı yalnızca bir kez.</p>
+      <p class="c-muted" style="margin:0;font-size:17px">Her gün yeni bir hedef. Tüm sayıları birer kez kullan.</p>
     </div>
     <div class="dl-card">
       <h2>Giriş yap</h2>
@@ -1410,13 +1423,13 @@ function dLogin() {
 }
 function dHome() {
   const u = S.user || { name: "Misafir" }, st = streakInfo(S.history), s = S.settings, se = S.session;
-  const exact = S.history.filter(h => h.diff === 0).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
+  const exact = S.history.filter(h => isExact(h)).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
   const now = new Date(), done = S.daily[dayKey()];
   const modeName = m => m === "sureli" ? "Süreli" : "Serbest";
   const playTags = `<span class="tag">Yeni oyun</span><span class="tag">${modeName(s.mode)} · ${LEVELS[s.level].name} · ${s.count} sayı</span>`;
   const recent = S.history.slice(-5).reverse();
-  const recRows = recent.length ? recent.map(h => `<div class="rec"><span class="dot" style="background:${h.diff === 0 ? "var(--lime)" : h.diff <= 5 ? "var(--amber)" : "var(--pink)"}"></span>
-      <div><b>Hedef ${h.target}</b><small>${h.diff === 0 ? "Tam isabet" : h.diff + " farkla"} · ${fmtT(h.time)}</small></div><span class="p">+${fmt(h.pts)}</span></div>`).join("")
+  const recRows = recent.length ? recent.map(h => `<div class="rec"><span class="dot" style="background:${isExact(h) ? "var(--lime)" : h.diff <= 5 ? "var(--amber)" : "var(--pink)"}"></span>
+      <div><b>Hedef ${h.target}</b><small>${isExact(h) ? "Tam isabet" : h.inc ? "Sayılar bitmedi" : h.diff + " farkla"} · ${fmtT(h.time)}</small></div><span class="p">+${fmt(h.pts)}</span></div>`).join("")
     : `<div class="emptystate">Henüz tur oynamadın.<br>İlk turunu oyna, burada görünsün.</div>`;
   return `<div class="dpage">${deskNav("home")}
     <div class="dhome">
@@ -1431,7 +1444,7 @@ function dHome() {
           <button class="b3 b-amber ddaily" data-a="daily">
             <div class="eb">${now.getDate()} ${MONTHS_LONG[now.getMonth()]} · GÜNÜN BULMACASI</div>
             <div class="qmarks">${"<i>?</i>".repeat(6)}</div>
-            <div><h3>Herkes aynı sayılarla</h3><p>${done ? (done.diff === 0 ? `Bugün çözdün · +${fmt(done.pts)} puan` : `Bugün ${done.diff} kala bitti · tekrar dene`) : "6 sayı · Orta seviye · süre yok"}</p></div>
+            <div><h3>Herkes aynı sayılarla</h3><p>${done ? (isExact(done) ? `Bugün çözdün · +${fmt(done.pts)} puan` : `Bugün çözülemedi · tekrar dene`) : "6 sayı · Orta seviye · süre yok"}</p></div>
           </button>
         </div>
         ${resumeBar()}
@@ -1546,7 +1559,8 @@ const A = {
   tile: v => pickTile(Number(v)),
   op: v => pickOp(v),
   undo: () => undo(), reset: () => resetBoard(), hint: () => useHint(),
-  finish: () => { if (!G.over) { G.over = true; finishRound(false); } },
+  finish: () => { if (!G || G.over) return; S.sheet = { type: "giveup" }; render(); },
+  dogiveup: () => { if (!G || G.over) return; S.sheet = null; G.over = true; finishRound(false); },
   pause: () => { if (!G || G.over) return; G.paused = !G.paused; S.sheet = null; render(); },
   sound: () => { S.settings.sfx = !S.settings.sfx; saveSettings(); if (S.sheet) S.sheet = null; render(); },
   gsettings: () => { if (G) G.paused = true; S.back = "game"; go("settings"); },
