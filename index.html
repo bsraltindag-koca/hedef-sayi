@@ -210,6 +210,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .chip i{font-style:normal;color:var(--paper-muted)}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;padding-bottom:6px}
 .tiles.many{grid-template-columns:repeat(5,1fr);gap:10px}
+.tiles.lots{grid-template-columns:repeat(6,1fr);gap:8px}
+.tiles.many .tile{font-size:clamp(20px,5.6vw,30px);border-radius:16px}
 .tile{position:relative;aspect-ratio:1.25;border-radius:20px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:clamp(28px,8vw,40px);letter-spacing:-.02em;display:grid;place-items:center;transition:transform .08s,box-shadow .08s;font-variant-numeric:tabular-nums;animation:tilein .22s ease-out}
 .tile:active{transform:translateY(4px);box-shadow:0 3px 0 var(--tile-shade)}
 .tile.der{color:var(--amber-ink)}
@@ -262,6 +264,11 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .gside{justify-content:flex-start}
   .gside .bottom{margin-top:auto;display:flex;flex-direction:column;gap:14px}
   .tiles,.tiles.many{display:flex;flex-wrap:nowrap;gap:12px;justify-content:center;padding-bottom:24px}
+  .tiles.many{flex-wrap:wrap;row-gap:14px;max-width:660px;padding-bottom:30px}
+  .tiles.many .tile{flex:0 0 80px;font-size:28px}
+  .gmain:has(.tiles.many){gap:16px}
+  .gmain:has(.tiles.many) .ring{width:250px}
+  .gmain:has(.tiles.lots) .ring{width:210px}
   .tile{aspect-ratio:1;flex:0 1 96px;min-width:0;font-size:clamp(26px,2.6vw,38px)}
   .tile .k{display:block}
   .tile.sel::after{content:"seçili";position:absolute;bottom:-30px;font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:0}
@@ -529,6 +536,12 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .dhome .resume small{font-size:14px}
 .dhome .resume{margin-top:22px}
 .rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
+.cntrow{display:flex;align-items:center;gap:16px}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper.stp-lg{gap:18px}
+.stepper.stp-lg button{width:56px;height:56px;font-size:26px;background:var(--tile);box-shadow:0 4px 0 var(--tile-shade)}
+.stepper.stp-lg b{font-size:34px;min-width:44px}
+.cnthint{color:var(--muted);font-size:14px}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
 .pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
 
@@ -582,7 +595,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.8";
+const APP_VERSION = "2.9";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -600,6 +613,7 @@ const S = {
   daily: store.get("daily", {}),
   screen: "login", period: "hafta", sheet: null, back: null
 };
+S.settings.count = Math.max(3, Math.min(12, Number(S.settings.count) || 6));
 const saveSettings = () => store.set("settings", S.settings);
 const saveSession = () => store.set("session", S.session);
 
@@ -752,7 +766,19 @@ function solve(vals, target, limit = 600000) {
     return false;
   }
   for (let d = 1; d < vals.length && !found && nodes <= limit; d++) dfs(vals, d);
+  solve.aborted = !found && nodes > limit;
   return found;
+}
+// Replays the puzzle's known solution against the current board; steps the player already made are skipped.
+function knownPath(pool, solution) {
+  pool = pool.slice(); const rest = [];
+  for (const st of solution) {
+    const ia = pool.indexOf(st.a), ib = ia < 0 ? -1 : pool.indexOf(st.b, 0);
+    const okA = ia >= 0, okB = (() => { if (!okA) return false; const c = pool.slice(); c.splice(ia, 1); return c.includes(st.b); })();
+    if (okA && okB) { pool.splice(pool.indexOf(st.a), 1); pool.splice(pool.indexOf(st.b), 1); pool.push(st.r); rest.push(st); }
+    else if (!pool.includes(st.r)) return null;
+  }
+  return rest;
 }
 
 /* ================= game state ================= */
@@ -859,7 +885,10 @@ function useHint() {
   const left = S.settings.hints - G.hintsUsed;
   if (G.hint && !G.hint.free) { showHintSheet(); return; }
   if (left <= 0) { sfx.err(); toast("İpucu hakkın bitti."); return; }
-  const live = liveTiles().map(t => t.v), sol = solve(live, G.ctx.current.target);
+  const live = liveTiles().map(t => t.v), cur = G.ctx.current;
+  let sol = knownPath(live, cur.solution);
+  if (!sol || !sol.length) sol = solve(live, cur.target, live.length > 7 ? 250000 : 600000);
+  if (!sol && solve.aborted) { sfx.err(); G.hint = { text: "Bu kadar sayıyla ipucu hesaplanamadı. Birkaç işlem daha yapıp tekrar dene.", free: true }; renderGame(); showHintSheet(); return; }
   if (!sol) { sfx.err(); G.hint = { text: "Bu sayılarla hedefe tam ulaşılamıyor. Bir adım geri alıp başka bir yol dene.", free: true }; renderGame(); showHintSheet(); return; }
   G.hintsUsed++;
   const s = sol[0];
@@ -1027,7 +1056,7 @@ function vSetup() {
     <div class="eyebrow">Seviye</div>
     <div class="grid2">${lv}</div>
     <div class="eyebrow">Sayı adedi</div>
-    <div class="seg3">${[4, 5, 6].map(n => `<button class="b3 ${s.count === n ? "on b-pink" : "b-tile"}" data-a="set" data-k="count" data-v="${n}">${n}</button>`).join("")}</div>
+    <div class="cntrow">${countStepper()}</div>
     <div class="spacer"></div>
     <div class="bestline"><span>En iyi skor</span><b class="num">${fmt(S.best)}</b></div>
     ${resumeNote()}
@@ -1038,7 +1067,7 @@ function vGame() {
   const c = G.ctx, cur = c.current, L = LEVELS[c.level], C = 2 * Math.PI * 92;
   const sel = G.sel !== null ? tileById(G.sel) : null;
   const live = liveTiles(), used = G.tiles.filter(t => t.used);
-  const tiles = live.map((t, i) => `<button class="tile ${t.der ? "der" : ""} ${G.sel === t.id ? "sel" : ""}" data-a="tile" data-v="${t.id}" aria-label="${t.v}${G.sel === t.id ? ", seçili" : ""}"><span class="k">${i + 1}</span>${t.v}</button>`).join("")
+  const tiles = live.map((t, i) => `<button class="tile ${t.der ? "der" : ""} ${G.sel === t.id ? "sel" : ""}" data-a="tile" data-v="${t.id}" aria-label="${t.v}${G.sel === t.id ? ", seçili" : ""}">${i < 9 ? `<span class="k">${i + 1}</span>` : ""}${t.v}</button>`).join("")
     + used.filter(t => !t.der).map(t => `<button class="tile used" disabled aria-label="${t.v}, kullanıldı">${t.v}</button>`).join("");
   const diff = sel ? Math.abs(cur.target - sel.v) : null;
   const liveBar = `<div class="live" aria-live="polite">
@@ -1077,7 +1106,7 @@ function vGame() {
     </header>
     <main class="gmain">
       ${ring}${liveBar}${chips}
-      <div class="tiles ${live.length + used.filter(t => !t.der).length > 8 ? "many" : ""}">${tiles}</div>
+      <div class="tiles ${(() => { const n = live.length + used.filter(t => !t.der).length; return n > 15 ? "many lots" : n > 8 ? "many" : ""; })()}">${tiles}</div>
       <div class="ops">${["+", "-", "*", "/"].map(o => `<button class="b3 b-pink op ${G.op === o ? "on" : ""}" data-a="op" data-v="${o}" aria-label="${OPSYM[o]}">${OPSYM[o]}</button>`).join("")}</div>
     </main>
     <aside class="gside">
@@ -1122,7 +1151,7 @@ function pathSolution(cur, steps) {
       if (!ok) break; pool.push(st.r);
     }
     if (!ok) continue;
-    const rest = solve(pool, cur.target, 200000);
+    const rest = solve(pool, cur.target, cur.nums.length > 7 ? 60000 : 200000);
     if (!rest) continue;
     const kept = steps.slice(0, j).map(x => ({ a: x.a, op: x.op, b: x.b, r: x.r }));
     let note = "";
@@ -1201,7 +1230,7 @@ function vSettings() {
     <div class="sec"><div class="eyebrow">Oyun</div><div class="sbox">
       <div class="srow"><span class="lb">Varsayılan mod</span>${seg("mode", [["sureli", "Süreli"], ["serbest", "Serbest"]])}</div>
       <div class="srow"><span class="lb">Tur süresi</span>${seg("duration", [[60, "1:00"], [120, "2:00"], [180, "3:00"]], true)}</div>
-      <div class="srow"><span class="lb">Sayı adedi</span>${seg("count", [[4, "4"], [5, "5"], [6, "6"]], true)}</div>
+      <div class="srow"><span class="lb">Sayı adedi<small>3 ile 12 arası</small></span>${countStepper(true)}</div>
       <div class="srow"><span class="lb">İpucu hakkı<small>Her ipucu −150 puan</small></span><div class="stepper"><button data-a="hints" data-v="-1" aria-label="Azalt">−</button><b>${s.hints}</b><button data-a="hints" data-v="1" aria-label="Artır">+</button></div></div>
     </div></div>
     <div class="sec"><div class="eyebrow">Görünüm ve ses</div><div class="sbox">
@@ -1314,6 +1343,11 @@ function vSheet() {
   return `<div class="scrim ${sh.type === "profile" ? "pop" : ""}" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
 }
 
+const COUNT_MIN = 3, COUNT_MAX = 12;
+function countStepper(small) {
+  const n = S.settings.count;
+  return `<div class="stepper ${small ? "" : "stp-lg"}"><button data-a="cnt" data-v="-1" aria-label="Azalt" ${n <= COUNT_MIN ? "disabled" : ""}>−</button><b>${n}</b><button data-a="cnt" data-v="1" aria-label="Artır" ${n >= COUNT_MAX ? "disabled" : ""}>+</button></div>${small ? "" : `<span class="cnthint">3 ile 12 arası sayı</span>`}`;
+}
 function resumeBar() {
   const se = S.session; if (!se) return "";
   return `<button class="b3 b-tile resume" data-a="resume">
@@ -1407,7 +1441,7 @@ function dSetup() {
         <div class="eyebrow" style="margin-top:10px">Seviye</div>
         <div class="dlvls">${lv}</div>
         <div class="eyebrow" style="margin-top:10px">Sayı adedi</div>
-        <div class="dcount">${[4, 5, 6].map(n => `<button class="b3 ${s.count === n ? "on b-pink" : "b-tile"}" data-a="set" data-k="count" data-v="${n}">${n}</button>`).join("")}</div>
+        <div class="cntrow">${countStepper()}</div>
       </div>
       <div class="right">
         <div class="paperwrap"><div class="receipt"><div class="rh"><h3>Tur ayarları</h3><span>10 TUR</span></div>
@@ -1434,7 +1468,7 @@ function dSettings() {
         <div class="srow"><span class="lb">Varsayılan mod<small>Yeni oyunlar bu modla açılır</small></span>${seg("mode", [["sureli", "Süreli"], ["serbest", "Serbest"]])}</div>
         <div class="srow"><span class="lb">Varsayılan seviye</span>${lvSeg}</div>
         <div class="srow"><span class="lb">Tur süresi</span>${seg("duration", [[60, "1:00"], [120, "2:00"], [180, "3:00"]], true)}</div>
-        <div class="srow"><span class="lb">Sayı adedi</span>${seg("count", [[4, "4"], [5, "5"], [6, "6"]], true)}</div>
+        <div class="srow"><span class="lb">Sayı adedi<small>3 ile 12 arası</small></span>${countStepper(true)}</div>
         <div class="srow"><span class="lb">İpucu hakkı<small>Her ipucu −150 puan</small></span><div class="stepper"><button data-a="hints" data-v="-1" aria-label="Azalt">−</button><b>${s.hints}</b><button data-a="hints" data-v="1" aria-label="Artır">+</button></div></div>
       </div>
       <div class="dcol">
@@ -1502,6 +1536,7 @@ const A = {
   next: () => nextRound(), retry: () => retryRound(), share: () => share(),
   sback: () => { const b = S.back || "home"; S.back = null; if (b === "game" && G) { go("game"); startTimer(); } else go(b === "settings" ? "home" : b); },
   sset: (v, el) => { const k = el.dataset.k; S.settings[k] = ["duration", "count"].includes(k) ? Number(v) : v; saveSettings(); if (k === "theme") applyTheme(); render(); },
+  cnt: v => { S.settings.count = Math.max(COUNT_MIN, Math.min(COUNT_MAX, S.settings.count + Number(v))); saveSettings(); render(); },
   hints: v => { S.settings.hints = Math.max(0, Math.min(5, S.settings.hints + Number(v))); saveSettings(); render(); },
   toggle: (v, el) => { const k = el.dataset.k; S.settings[k] = !S.settings[k]; saveSettings(); if (k === "music") { ac(); syncMusic(); } if (k === "vibe" && S.settings.vibe) buzz(30); if (k === "sfx" && S.settings.sfx) sfx.tap(); render(); },
   editname: () => { S.sheet = { type: "auth", via: S.user && S.user.via || "Misafir", edit: true }; render(); },
