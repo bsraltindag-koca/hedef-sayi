@@ -252,8 +252,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .gside .rail-desk{display:flex;flex-direction:column;gap:14px}
   .gside{justify-content:flex-start}
   .gside .bottom{margin-top:auto;display:flex;flex-direction:column;gap:14px}
-  .tiles,.tiles.many{grid-template-columns:repeat(auto-fit,minmax(90px,104px));justify-content:center;padding-bottom:24px}
-  .tile{aspect-ratio:1}
+  .tiles,.tiles.many{display:flex;flex-wrap:nowrap;gap:12px;justify-content:center;padding-bottom:24px}
+  .tile{aspect-ratio:1;flex:0 1 96px;min-width:0;font-size:clamp(26px,2.6vw,38px)}
   .tile .k{display:block}
   .tile.sel::after{content:"seçili";position:absolute;bottom:-30px;font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:0}
   .gmain{justify-content:center;gap:22px;padding-bottom:40px}
@@ -263,6 +263,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 }
 
 /* ---------- result ---------- */
+.rpage{display:flex;flex-direction:column;flex:1}
 .result{display:flex;flex-direction:column;gap:22px;width:100%;max-width:1100px;margin:0 auto;padding:32px 20px calc(20px + env(safe-area-inset-bottom,0px));flex:1}
 .result .r-left{display:flex;flex-direction:column;gap:20px}
 .result .rbtns{margin-top:auto;padding-top:8px}
@@ -367,6 +368,119 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .opsuse b{font-family:var(--display);font-size:22px;font-weight:800}
 .emptystate{text-align:center;color:var(--muted);padding:30px 10px;line-height:1.5}
 
+/* ---------- desktop pages ---------- */
+.dpage{width:100%;max-width:1200px;margin:0 auto;padding:28px 40px 48px;display:flex;flex-direction:column;gap:28px;flex:1}
+.dnav{display:flex;align-items:center;gap:32px}
+.dnav .logo{font-size:30px}
+.dtabs{display:flex;background:var(--surface);border-radius:16px;padding:6px;gap:4px}
+.dtabs button{padding:11px 18px;border-radius:11px;font-weight:700;color:var(--muted);font-size:16px}
+.dtabs button.on{background:var(--paper);color:var(--paper-ink)}
+.dtabs button:not(.on):hover{color:var(--ink)}
+.duser{margin-left:auto;display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:30px;padding:5px 5px 5px 18px;font-weight:700}
+.avatar.xs{width:44px;height:44px;font-size:14px;border-width:2.5px}
+.dhead{display:flex;align-items:center;gap:16px}
+.dhead h1{font-size:52px;font-weight:800;letter-spacing:-.04em}
+.dhead .seg{margin-left:auto}
+.dhead .seg button{padding:11px 18px}
+.dlogin{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:64px;max-width:1200px;margin:0 auto;width:100%;padding:48px 40px;flex:1}
+.dl-left{display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.dl-hero{display:flex;flex-direction:column;gap:48px}
+.dl-left h1{font-size:clamp(56px,6vw,84px);line-height:.95;letter-spacing:-.05em;font-weight:800}
+.dl-eq{display:flex;align-items:center;gap:16px}
+.dt{display:grid;place-items:center;width:100px;height:100px;border-radius:22px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:38px;flex:none}
+.dt.t1{transform:rotate(-4deg)} .dt.t2{transform:rotate(3deg)}
+.dt.res{width:130px;background:var(--amber);color:var(--on-accent);box-shadow:0 7px 0 var(--amber-shade);transform:rotate(2deg)}
+.dop{width:70px;height:70px;border-radius:50%;background:var(--pink);box-shadow:0 6px 0 var(--pink-shade);color:var(--on-accent);display:grid;place-items:center;font-size:26px;font-weight:800;flex:none}
+.deq{font-size:36px;color:var(--faint);font-weight:800}
+.dl-card{background:var(--surface);border-radius:32px;padding:44px;display:flex;flex-direction:column;gap:16px;align-self:center}
+.dl-card h2{font-size:38px;font-weight:800}
+.dl-card > p{margin:0 0 6px;line-height:1.5}
+.dl-card .authbtn{min-height:60px;font-size:18px;padding:10px 18px;gap:14px}
+.dl-card .authbtn .ic{width:38px;height:38px;border-radius:10px}
+.dl-card .authbtn .ic svg{width:20px;height:20px}
+.dl-card .big{min-height:60px;font-size:18px}
+.dl-card .legal{font-size:14px}
+.dhome{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:36px;align-items:start}
+.dhome .hello h1{font-size:clamp(52px,5.4vw,76px);line-height:.98;letter-spacing:-.045em;margin-top:8px}
+.dhome .hello small{font-size:19px}
+.dcards{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;margin-top:32px}
+.dplay,.ddaily{min-height:250px;border-radius:28px;padding:24px 26px;text-align:left;display:flex;flex-direction:column;gap:14px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{background:color-mix(in srgb,var(--on-accent) 10%,transparent);border-radius:20px;padding:7px 12px;font-weight:700;font-size:14px}
+.dcard-bot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.dplay h2{font-size:60px;font-weight:800;letter-spacing:-.045em;line-height:1}
+.dplay p,.ddaily p{margin:6px 0 0;font-weight:500}
+.dplay .playbtn{width:64px;height:64px}
+.ddaily .eb{font-family:var(--mono);font-weight:800;letter-spacing:.06em;font-size:15px;line-height:1.2}
+.qmarks{display:flex;gap:9px;flex-wrap:wrap}
+.qmarks i{font-style:normal;min-width:36px;height:36px;padding:0 6px;border-radius:9px;background:color-mix(in srgb,var(--on-accent) 12%,transparent);display:grid;place-items:center;font-family:var(--mono);font-weight:800}
+.ddaily h3{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin-top:auto}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;margin-top:30px}
+.qstart{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.qstart button{padding:14px 18px;border-radius:14px;font-weight:700;display:flex;gap:8px;align-items:baseline}
+.qstart button span{font-family:var(--mono);color:var(--muted);font-size:14px;font-weight:600}
+.dside{display:flex;flex-direction:column;gap:20px}
+.dstat{background:var(--surface);border-radius:24px;padding:22px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dstat small{color:var(--muted);font-size:14px;display:block;margin-bottom:2px}
+.dstat b{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.02em}
+.recent{background:var(--surface);border-radius:24px;padding:22px 24px;min-height:440px}
+.recent .ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.recent h3{font-size:20px;font-weight:800}
+.linkl{color:var(--lime-ink);font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+.rec{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+.rec .dot{width:10px;height:10px;border-radius:3px;flex:none}
+.rec b{display:block;font-size:17px}
+.rec small{color:var(--muted);font-size:13px}
+.rec .p{margin-left:auto;font-family:var(--display);font-weight:800;font-size:19px}
+.recent .emptystate{padding:60px 10px}
+.dsetup{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:44px;flex:1}
+.dsetup .left{display:flex;flex-direction:column;gap:16px}
+.dmodes{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.dmodes .mode{height:100%}
+.dlvls{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.dcount{display:flex;gap:14px}
+.dcount button{width:78px;height:60px;font-size:24px;font-weight:800;border-radius:16px}
+.dcount button.on{box-shadow:0 0 0 4px var(--ink) inset,0 6px 0 var(--pink-shade)}
+.dsetup .right{display:flex;flex-direction:column;justify-content:space-between;gap:28px}
+.dsetup .paperwrap{margin-top:24px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1.5px dashed var(--paper-line);font-family:var(--mono);font-size:16px}
+.kv span{color:var(--paper-muted)} .kv b{font-weight:800}
+.dsetup .finish{height:72px;font-size:22px}
+.dsettings{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.dsettings .sbox{padding:22px 28px 8px}
+.dsettings .srow{min-height:70px;padding:12px 0}
+.dsettings .srow .lb{font-size:18px}
+.dsettings .srow .lb small{font-size:14px}
+.dcol{display:flex;flex-direction:column;gap:28px;min-width:0}
+.seg button.pk.on{background:var(--pink)}
+.acct-d{display:flex;align-items:center;gap:16px;padding:12px 0 18px}
+.acct-d b{font-size:19px;display:block}
+.acct-d small{color:var(--muted)}
+.acct-d .linkl{margin-left:auto}
+.resetrow{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding:18px 0 14px}
+.resetrow .danger{border:0;padding:0;width:auto}
+.stgrid.d4{grid-template-columns:repeat(4,1fr);gap:20px}
+.dstats{display:grid;grid-template-columns:1.45fr 1fr;gap:20px}
+.dstats .dcol{gap:20px}
+.dstats .chart{display:flex;flex-direction:column}
+.dstats .chart .bars{flex:1;height:auto;min-height:300px}
+.dstats .bars .bv{font-size:14px}
+.dstats .blabels span{font-size:15px}
+.rhead{display:none}
+.rnote{color:var(--paper-muted);font-size:15px;line-height:1.45;margin:16px 0 4px}
+.dk-only{display:none}
+.nokeys .kbd,.nokeys .tile .k{display:none!important}
+@media (min-width:920px){
+  .rpage .rhead{display:flex;width:100%;max-width:1200px;margin:0 auto;padding:28px 40px 0}
+  .rpage .rhead .gmeta{display:flex}
+  .rpage .rhead .backb{display:grid}
+  .rpage .rhead .dk{display:inline}
+  .rpage .result{max-width:1200px;padding:40px 40px 48px}
+  .dk-only{display:inline}
+  .game{max-width:1200px}
+  .result.fail .paperwrap{max-width:420px;justify-self:end}
+}
+
 /* ---------- sheet ---------- */
 .scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:end center;z-index:60;padding:16px;animation:fade .15s}
 @media (min-width:600px){.scrim{place-items:center}}
@@ -393,7 +507,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.2";
+const APP_VERSION = "1.3";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -401,7 +515,7 @@ const store = {
   set(k, v) { try { localStorage.setItem("hedef:" + k, JSON.stringify(v)); } catch (e) {} },
   del(k) { try { localStorage.removeItem("hedef:" + k); } catch (e) {} }
 };
-const DEFAULTS = { mode: "sureli", duration: 120, count: 6, hints: 3, level: "orta", theme: "gece", sfx: true, music: false, vibe: true };
+const DEFAULTS = { mode: "sureli", duration: 120, count: 6, hints: 3, level: "orta", theme: "gece", sfx: true, music: false, vibe: true, keys: true };
 const S = {
   user: store.get("user", null),
   settings: Object.assign({}, DEFAULTS, store.get("settings", {})),
@@ -746,7 +860,8 @@ function go(screen) {
 }
 function render() {
   const app = $("#app");
-  const fn = { login: vLogin, home: vHome, setup: vSetup, game: vGame, result: vResult, summary: vSummary, settings: vSettings, stats: vStats }[S.screen];
+  const desk = isDesk() ? { login: dLogin, home: dHome, setup: dSetup, settings: dSettings } : {};
+  const fn = desk[S.screen] || { login: vLogin, home: vHome, setup: vSetup, game: vGame, result: vResult, summary: vSummary, settings: vSettings, stats: vStats }[S.screen];
   app.innerHTML = fn() + (S.sheet ? vSheet() : "");
   if (S.screen === "game") { paintTimer(); const ch = $(".chips"); if (ch) ch.scrollLeft = ch.scrollWidth; }
   const f = document.querySelector("[autofocus]"); if (f) f.focus();
@@ -758,6 +873,9 @@ function applyTheme() {
 }
 
 /* ================= views ================= */
+const DESK = "(min-width:920px)";
+const isDesk = () => matchMedia(DESK).matches;
+const MONTHS_LONG = ["OCAK", "ŞUBAT", "MART", "NİSAN", "MAYIS", "HAZİRAN", "TEMMUZ", "AĞUSTOS", "EYLÜL", "EKİM", "KASIM", "ARALIK"];
 const logo = cls => `<div class="logo ${cls || ""}">hedef<i>.</i></div>`;
 function vLogin() {
   return `<div class="login col-wrap" style="flex:1;display:flex">
@@ -856,7 +974,7 @@ function vGame() {
     </svg>
     <div class="ctr"><small>HEDEF</small><div class="tgt">${cur.target}</div><div class="tm" id="tm">${I.timer}<span>${timed ? fmtT(c.duration) : "00:00"}</span></div></div></div>`;
   const label = c.kind === "daily" ? "Günün bulmacası" : (timed ? "Süreli" : "Serbest");
-  return `<div class="game ${G.paused ? "paused" : ""}">
+  return `<div class="game ${G.paused ? "paused" : ""} ${S.settings.keys ? "" : "nokeys"}">
     <header class="ghead">
       <button class="iconbtn backb" data-a="quit" aria-label="Ana sayfa">${I.back}</button>
       ${logo()}
@@ -896,6 +1014,27 @@ function vGame() {
     ${G.paused ? `<div class="pauseov"><div class="card"><h2 style="font-size:32px">Duraklatıldı</h2><p class="c-muted" style="margin:0">Sayılar gizlendi, süre durdu.</p><button class="b3 b-lime big" data-a="pause" autofocus>Devam et</button></div></div>` : ""}
   </div>`;
 }
+// A solution that keeps as much of the player's own path as possible, plus a one-line note.
+function pathSolution(cur, steps) {
+  const ORD = ["", "ilk", "ikinci", "üçüncü", "dördüncü", "beşinci"];
+  for (let j = steps.length; j >= 0; j--) {
+    const pool = cur.nums.slice(); let ok = true;
+    for (const st of steps.slice(0, j)) {
+      for (const v of [st.a, st.b]) { const i = pool.indexOf(v); if (i < 0) { ok = false; break; } pool.splice(i, 1); }
+      if (!ok) break; pool.push(st.r);
+    }
+    if (!ok) continue;
+    const rest = solve(pool, cur.target, 200000);
+    if (!rest) continue;
+    const kept = steps.slice(0, j).map(x => ({ a: x.a, op: x.op, b: x.b, r: x.r }));
+    let note = "";
+    if (!rest.length) note = `${cur.target} zaten elindeydi. Onu seçip bitirebilirdin.`;
+    else if (j > 0) note = `Senin yolun ${ORD[j] || j + "."} adıma kadar aynıydı. ${rest[0].a} ile ${acc(rest[0].b)} birleştirmek hedefi tutturuyordu.`;
+    else note = `Bu çözüm ${rest[0].a} ile ${acc(rest[0].b)} birleştirerek başlıyor.`;
+    return { steps: kept.concat(rest), note };
+  }
+  return { steps: solve(cur.nums, cur.target) || cur.solution, note: "" };
+}
 function receiptRows(list) { return list.map((s, i) => `<div class="rrow"><span><i>${i + 1}.</i>${s.a} ${OPSYM[s.op]} ${s.b}</span><b>${s.r}</b></div>`).join(""); }
 function vResult() {
   const c = G.ctx, l = c.last, last = c.kind === "daily" || c.round >= c.total;
@@ -919,8 +1058,15 @@ function vResult() {
       <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime nextb" data-a="next">${nextLabel}</button></div>
     </div>`;
   }
-  const sol = solve(c.current.nums, c.current.target) || c.current.solution;
-  return `<div class="result">
+  if (!l.path) l.path = pathSolution(c.current, l.stepsList);
+  const sol = l.path.steps, L = LEVELS[c.level];
+  const rhead = `<header class="ghead rhead">
+      <button class="iconbtn backb" data-a="go" data-v="home" aria-label="Ana sayfa">${I.back}</button>
+      ${logo()}
+      <span class="pill"><span class="dk">${c.kind === "daily" ? "Günün bulmacası" : (c.mode === "sureli" ? "Süreli" : "Serbest")} · </span><em>${L.name}</em></span>
+      <div class="gmeta"><span>Tur <b>${c.round}</b>/${c.total}</span><span>Puan <b class="num">${fmt(c.score)}</b></span></div>
+    </header>`;
+  return `<div class="rpage">${rhead}<div class="result fail">
     <div class="r-left">
       <div class="r-title"><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : "En yakınla bitti"}</div>
       <h1>${l.diff} kala<br>durdun.</h1></div>
@@ -931,9 +1077,9 @@ function vResult() {
         <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
       </div>
     </div>
-    <div class="r-right"><div class="receipt"><div class="rh"><h3>Mümkün olan çözüm</h3><span>${sol.length} ADIM</span></div>${receiptRows(sol)}</div></div>
-    <div class="rbtns stack"><button class="b3 b-lime" data-a="next">${nextLabel}</button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
-  </div>`;
+    <div class="r-right paperwrap"><div class="receipt"><div class="rh"><h3>Mümkün olan çözüm</h3><span>${sol.length} ADIM</span></div>${receiptRows(sol)}${l.path.note ? `<p class="rnote">${l.path.note}</p>` : ""}</div></div>
+    <div class="rbtns stack"><button class="b3 b-lime" data-a="next">${nextLabel}<span class="dk-only"> ↵</span></button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
+  </div></div>`;
 }
 function vSummary() {
   const c = S.summary, exact = c.rounds.filter(r => r.diff === 0).length;
@@ -988,8 +1134,11 @@ function vStats() {
   const H = S.history.filter(h => h.t >= from);
   const prev = span === Infinity ? null : S.history.filter(h => h.t >= from - span * day && h.t < from);
   const tabs = `<div class="seg" role="tablist">${[["hafta", "Hafta"], ["ay", "Ay"], ["tumu", "Tümü"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div>`;
-  const head = `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>Rapor</h1><span class="spacer"></span>${tabs}</div>`;
-  if (!H.length) return `<div class="col">${head}<div class="panel emptystate"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
+  const desk = isDesk();
+  const head = desk
+    ? `${deskNav("stats")}<div class="dhead"><h1>Rapor</h1><div class="seg" role="tablist">${[["hafta", "Bu hafta"], ["ay", "Bu ay"], ["tumu", "Tüm zamanlar"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div></div>`
+    : `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>Rapor</h1><span class="spacer"></span>${tabs}</div>`;
+  if (!H.length) return `<div class="${desk ? "dpage" : "col"}">${head}<div class="panel emptystate"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
   const total = H.reduce((a, h) => a + h.pts, 0), exact = H.filter(h => h.diff === 0);
   let change = "";
   if (prev && prev.length) { const pt = prev.reduce((a, h) => a + h.pts, 0); const ch = pt ? Math.round((total - pt) / pt * 100) : 0; change = `${ch >= 0 ? "▲" : "▼"} %${Math.abs(ch)} önceki ${p === "hafta" ? "haftaya" : "aya"} göre`; }
@@ -1009,9 +1158,9 @@ function vStats() {
   buckets.forEach(b => b.v = S.history.filter(h => h.t >= b.s && h.t < b.e).reduce((a, h) => a + h.pts, 0));
   const fd = new Date(buckets[0].s), ld = new Date(buckets[buckets.length - 1].e - 1);
   label = `${fd.getDate()}${fd.getMonth() !== ld.getMonth() ? " " + MONTHS[fd.getMonth()] : ""}–${ld.getDate()} ${MONTHS[ld.getMonth()]}`;
-  const max = Math.max(1, ...buckets.map(b => b.v)), dense = buckets.length > 7;
+  const max = Math.max(1, ...buckets.map(b => b.v)), dense = buckets.length > 7 && !(desk && buckets.length <= 12);
   const kfmt = v => v >= 1000 ? (v / 1000).toFixed(1).replace(".", ",") + "k" : String(v);
-  const bars = `<div class="bars" style="gap:${dense ? 3 : 8}px">${buckets.map((b, i) => `<div class="bc ${i === buckets.length - 1 ? "last" : ""}">${!dense || i === buckets.length - 1 ? `<span class="bv">${b.v ? kfmt(b.v) : ""}</span>` : ""}<div class="bar" style="height:${b.v / max * 82}%" title="${fmt(b.v)} puan"></div></div>`).join("")}</div>
+  const bars = `<div class="bars" style="gap:${dense ? 3 : 8}px">${buckets.map((b, i) => `<div class="bc ${i === buckets.length - 1 ? "last" : ""}">${!dense || i === buckets.length - 1 ? `<span class="bv">${b.v ? (desk ? fmt(b.v) : kfmt(b.v)) : ""}</span>` : ""}<div class="bar" style="height:${b.v / max * 82}%" title="${fmt(b.v)} puan"></div></div>`).join("")}</div>
     <div class="blabels" style="gap:${dense ? 3 : 8}px">${buckets.map(b => `<span style="overflow:visible;white-space:nowrap">${b.l}</span>`).join("")}</div>`;
   const n = H.length, grp = [["Tam isabet", H.filter(h => h.diff === 0).length, "var(--lime)"], ["1–5 fark", H.filter(h => h.diff >= 1 && h.diff <= 5).length, "var(--amber)"], ["6–10 fark", H.filter(h => h.diff >= 6 && h.diff <= 10).length, "var(--pink)"], ["10+ fark", H.filter(h => h.diff > 10).length, "var(--faint)"]];
   const pc = v => Math.round(v / n * 100);
@@ -1019,20 +1168,20 @@ function vStats() {
   const opsSum = Object.values(opsT).reduce((a, b) => a + b, 0) || 1;
   const order = Object.keys(opsT).sort((a, b) => opsT[b] - opsT[a]);
   const hints = H.reduce((a, h) => a + h.hints, 0);
-  return `<div class="col">${head}
-    <div class="stgrid">
+  const kpis = `<div class="stgrid ${desk ? "d4" : ""}">
       <div class="sc hero"><small>Toplam puan</small><b>${fmt(total)}</b><span>${change}</span></div>
       <div class="sc"><small>Oynanan tur</small><b>${n}</b><span>${exact.length} tam isabet</span></div>
       <div class="sc"><small>Ort. çözüm süresi</small><b>${avg == null ? "—" : fmtT(avg)}</b><span>${fast == null ? "henüz tam isabet yok" : "en hızlı " + fmtT(fast)}</span></div>
       <div class="sc"><small>Seri</small><b class="c-pink">${st.cur} gün</b><span>rekor ${st.best} gün</span></div>
-    </div>
-    <div class="panel"><div class="ph"><h3>${p === "tumu" ? "Haftalık puan" : "Günlük puan"}</h3><span>${label}</span></div>${bars}</div>
-    <div class="panel"><div class="ph"><h3>Hedefe ne kadar yaklaştın</h3></div>
+    </div>`;
+  const chart = `<div class="panel chart"><div class="ph"><h3>${p === "tumu" ? "Haftalık puan" : "Günlük puan"}</h3><span>${label}</span></div>${bars}</div>`;
+  const close = `<div class="panel"><div class="ph"><h3>Hedefe ne kadar yaklaştın</h3></div>
       <div class="closebar">${grp.filter(g => g[1]).map(g => `<i style="flex:${g[1]};background:${g[2]}"></i>`).join("")}</div>
-      <div class="legend">${grp.map(g => `<div><span class="sw" style="background:${g[2]}"></span>${g[0]}<b>%${pc(g[1])}</b></div>`).join("")}</div></div>
-    <div class="panel"><div class="ph"><h3>En çok kullandığın işlem</h3><span>ipucu: ${hints} kez</span></div>
-      <div class="opsuse">${order.map((k, i) => `<div><div class="oc ${i === 0 && opsT[k] ? "top" : ""}">${OPSYM[k]}</div><b>%${Math.round(opsT[k] / opsSum * 100)}</b></div>`).join("")}</div></div>
-  </div>`;
+      <div class="legend">${grp.map(g => `<div><span class="sw" style="background:${g[2]}"></span>${g[0]}<b>%${pc(g[1])}</b></div>`).join("")}</div></div>`;
+  const opsP = `<div class="panel" style="flex:1"><div class="ph"><h3>En çok kullandığın işlem</h3><span>ipucu: ${hints} kez</span></div>
+      <div class="opsuse">${order.map((k, i) => `<div><div class="oc ${i === 0 && opsT[k] ? "top" : ""}">${OPSYM[k]}</div><b>%${Math.round(opsT[k] / opsSum * 100)}</b></div>`).join("")}</div></div>`;
+  if (desk) return `<div class="dpage">${head}${kpis}<div class="dstats">${chart}<div class="dcol">${close}${opsP}</div></div></div>`;
+  return `<div class="col">${head}${kpis}${chart}${close}${opsP}</div>`;
 }
 function vSheet() {
   const sh = S.sheet;
@@ -1065,6 +1214,138 @@ function vSheet() {
   return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
 }
 
+/* ================= desktop views ================= */
+function deskNav(active) {
+  const u = S.user || { name: "Misafir" };
+  const items = [["home", "Ana sayfa"], ["stats", "Rapor"], ["settings", "Ayarlar"], ["howto", "Nasıl oynanır"]];
+  return `<header class="dnav">${logo()}
+    <nav class="dtabs">${items.map(([k, l]) => `<button class="${active === k ? "on" : ""}" ${k === "howto" ? 'data-a="howto"' : `data-a="go" data-v="${k}"`}>${l}</button>`).join("")}</nav>
+    <button class="duser" data-a="go" data-v="settings"><span>${esc(u.name)}</span><span class="avatar xs">${esc(initials(u.name))}</span></button></header>`;
+}
+function dLogin() {
+  return `<div class="dlogin">
+    <div class="dl-left">${logo()}
+      <div class="dl-hero">
+        <h1>Sayıları<br>birleştir,<br><span class="c-lime">hedefi tuttur.</span></h1>
+        <div class="dl-eq" role="img" aria-label="50 çarpı 10 eşittir 500"><span class="dt t1">50</span><span class="dop">×</span><span class="dt t2">10</span><span class="deq">=</span><span class="dt res">500</span></div>
+      </div>
+      <p class="c-muted" style="margin:0;font-size:17px">Her gün yeni bir hedef. Her sayı yalnızca bir kez.</p>
+    </div>
+    <div class="dl-card">
+      <h2>Giriş yap</h2>
+      <p class="c-muted">Skorların ve serilerin kaybolmasın, kaldığın yerden devam et.</p>
+      <button class="b3 b-paper authbtn" data-a="auth" data-v="Apple"><span class="ic">${I.apple}</span>Apple ile devam et</button>
+      <button class="b3 b-paper authbtn" data-a="auth" data-v="Google"><span class="ic">${I.google}</span>Google ile devam et</button>
+      <button class="b3 b-lime authbtn" data-a="auth" data-v="E-posta"><span class="ic">${I.mail}</span>E-posta ile devam et</button>
+      <div class="or">ya da</div>
+      <button class="b3 b-tile big" data-a="guest">Misafir olarak oyna</button>
+      <p class="legal">Devam ederek <a href="#kosullar" data-a="legal">Kullanım Koşulları</a>'nı ve <a href="#gizlilik" data-a="legal">Gizlilik Politikası</a>'nı kabul etmiş olursun.</p>
+      <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
+    </div>
+  </div>`;
+}
+function dHome() {
+  const u = S.user || { name: "Misafir" }, st = streakInfo(S.history), s = S.settings, se = S.session;
+  const exact = S.history.filter(h => h.diff === 0).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
+  const now = new Date(), done = S.daily[dayKey()];
+  const modeName = m => m === "sureli" ? "Süreli" : "Serbest";
+  const playTags = se ? `<span class="tag">Kaldığın yerden</span><span class="tag">${modeName(se.mode)} · ${LEVELS[se.level].name} · Tur ${se.round}/${se.total}</span>`
+    : `<span class="tag">Yeni oyun</span><span class="tag">${modeName(s.mode)} · ${LEVELS[s.level].name} · ${s.count} sayı</span>`;
+  const recent = S.history.slice(-5).reverse();
+  const recRows = recent.length ? recent.map(h => `<div class="rec"><span class="dot" style="background:${h.diff === 0 ? "var(--lime)" : h.diff <= 5 ? "var(--amber)" : "var(--pink)"}"></span>
+      <div><b>Hedef ${h.target}</b><small>${h.diff === 0 ? "Tam isabet" : h.diff + " farkla"} · ${fmtT(h.time)}</small></div><span class="p">+${fmt(h.pts)}</span></div>`).join("")
+    : `<div class="emptystate">Henüz tur oynamadın.<br>İlk turunu oyna, burada görünsün.</div>`;
+  return `<div class="dpage">${deskNav("home")}
+    <div class="dhome">
+      <div>
+        <div class="hello"><small>Merhaba ${esc(u.name.split(" ")[0])},</small><h1>Bugün hangi sayıyı vuruyoruz?</h1></div>
+        <div class="dcards">
+          <button class="b3 b-lime dplay" data-a="play">
+            <div class="tags">${playTags}</div>
+            <div class="dcard-bot"><div><h2>Oyna</h2><p>${se ? `Hedef ${se.current.target} seni bekliyor.` : "Modunu ve seviyeni seç, başla."}</p></div>
+            <span class="playbtn">${I.play.replace("<svg", '<svg width="26" height="26"')}</span></div>
+          </button>
+          <button class="b3 b-amber ddaily" data-a="daily">
+            <div class="eb">${now.getDate()} ${MONTHS_LONG[now.getMonth()]} · GÜNÜN BULMACASI</div>
+            <div class="qmarks">${"<i>?</i>".repeat(6)}</div>
+            <div><h3>Herkes aynı sayılarla</h3><p>${done ? (done.diff === 0 ? `Bugün çözdün · +${fmt(done.pts)} puan` : `Bugün ${done.diff} kala bitti · tekrar dene`) : "6 sayı · Orta seviye · süre yok"}</p></div>
+          </button>
+        </div>
+        <div class="qhead"><div class="eyebrow">Hızlı başla</div><button class="linkl" data-a="go" data-v="setup">Tüm ayarlarla yeni oyun</button></div>
+        <div class="qstart">${Object.entries(LEVELS).map(([k, L]) => `<button class="b3 b-tile" data-a="quick" data-v="${k}">${L.name} <span>${k === "uzman" ? "4+ adım" : L.min + "–" + L.max}</span></button>`).join("")}</div>
+      </div>
+      <aside class="dside">
+        <div class="dstat"><div><small>Seri</small><b class="c-pink">${st.cur} gün</b></div><div><small>En iyi</small><b>${fmt(S.best)}</b></div><div><small>İsabet</small><b class="c-lime">%${pct}</b></div></div>
+        <div class="recent"><div class="ph"><h3>Son turlar</h3><button class="linkl" data-a="go" data-v="stats">Rapora git</button></div>${recRows}</div>
+        <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
+      </aside>
+    </div>
+  </div>`;
+}
+function dSetup() {
+  const s = S.settings, L = LEVELS[s.level];
+  const lv = Object.entries(LEVELS).map(([k, Lv]) => `<button class="b3 lvl ${s.level === k ? "on b-pink" : "b-tile"}" data-a="set" data-k="level" data-v="${k}">
+      <div class="top"><h3>${Lv.name}</h3><span class="dots">${[1, 2, 3, 4].map(i => `<i class="${i <= Lv.dots ? "f" : ""}"></i>`).join("")}</span></div><p>${Lv.desc}</p></button>`).join("");
+  const dur = fmtT(s.duration).replace(/^0/, "");
+  return `<div class="dpage">${deskNav("home")}
+    <div class="dhead"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>Yeni oyun</h1></div>
+    <div class="dsetup">
+      <div class="left">
+        <div class="eyebrow">Mod</div>
+        <div class="dmodes">
+          <button class="b3 mode ${s.mode === "sureli" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="sureli"><span class="radio"></span><div><h3>Süreli</h3><p>Her tur ${dur}. Hız bonusu var.</p></div><span class="rt">${dur}</span></button>
+          <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt">∞</span></button>
+        </div>
+        <div class="eyebrow" style="margin-top:10px">Seviye</div>
+        <div class="dlvls">${lv}</div>
+        <div class="eyebrow" style="margin-top:10px">Sayı adedi</div>
+        <div class="dcount">${[4, 5, 6].map(n => `<button class="b3 ${s.count === n ? "on b-pink" : "b-tile"}" data-a="set" data-k="count" data-v="${n}">${n}</button>`).join("")}</div>
+      </div>
+      <div class="right">
+        <div class="paperwrap"><div class="receipt"><div class="rh"><h3>Tur ayarları</h3><span>10 TUR</span></div>
+          <div class="kv"><span>Mod</span><b>${s.mode === "sureli" ? "Süreli · " + dur : "Serbest"}</b></div>
+          <div class="kv"><span>Seviye</span><b>${L.name}</b></div>
+          <div class="kv"><span>Sayı adedi</span><b>${s.count}</b></div>
+          <div class="kv"><span>İpucu hakkı</span><b>${s.hints}</b></div>
+          <div class="tot"><span>En iyi skorun</span><b>${fmt(S.best)}</b></div></div></div>
+        <button class="b3 b-lime finish" data-a="start">Oyuna başla ↵</button>
+      </div>
+    </div>
+  </div>`;
+}
+function dSettings() {
+  const s = S.settings, u = S.user || { name: "Misafir", email: "" };
+  const tog = k => `<button class="tog ${s[k] ? "on" : ""}" data-a="toggle" data-k="${k}" role="switch" aria-checked="${s[k]}"></button>`;
+  const lvSeg = `<div class="seg" role="group">${Object.entries(LEVELS).map(([k, L]) => `<button class="pk ${s.level === k ? "on" : ""}" data-a="sset" data-k="level" data-v="${k}">${L.name}</button>`).join("")}</div>`;
+  const via = u.via === "E-posta" ? "e-posta ile giriş" : u.via ? u.via + " ile giriş" : "misafir hesabı";
+  const back = S.back === "game" && G ? `<button class="b3 b-lime" style="margin-left:auto;padding:14px 22px;border-radius:16px" data-a="sback">Oyuna dön</button>` : "";
+  return `<div class="dpage">${deskNav("settings")}
+    <div class="dhead"><h1>Ayarlar</h1>${back}</div>
+    <div class="dsettings">
+      <div class="sbox"><div class="eyebrow">Oyun</div>
+        <div class="srow"><span class="lb">Varsayılan mod<small>Yeni oyunlar bu modla açılır</small></span>${seg("mode", [["sureli", "Süreli"], ["serbest", "Serbest"]])}</div>
+        <div class="srow"><span class="lb">Varsayılan seviye</span>${lvSeg}</div>
+        <div class="srow"><span class="lb">Tur süresi</span>${seg("duration", [[60, "1:00"], [120, "2:00"], [180, "3:00"]], true)}</div>
+        <div class="srow"><span class="lb">Sayı adedi</span>${seg("count", [[4, "4"], [5, "5"], [6, "6"]], true)}</div>
+        <div class="srow"><span class="lb">İpucu hakkı<small>Her ipucu −150 puan</small></span><div class="stepper"><button data-a="hints" data-v="-1" aria-label="Azalt">−</button><b>${s.hints}</b><button data-a="hints" data-v="1" aria-label="Artır">+</button></div></div>
+      </div>
+      <div class="dcol">
+        <div class="sbox"><div class="eyebrow">Görünüm ve ses</div>
+          <div class="srow"><span class="lb">Tema</span>${seg("theme", [["gece", "Gece"], ["gunduz", "Gündüz"], ["sistem", "Sistem"]])}</div>
+          <div class="srow"><span class="lb">Ses efektleri<small>Taş ve tuş sesleri</small></span>${tog("sfx")}</div>
+          <div class="srow"><span class="lb">Müzik<small>Arka plan müziği</small></span>${tog("music")}</div>
+          <div class="srow"><span class="lb">Klavye kısayolları<small>Oyun ekranında tuş ipuçlarını göster</small></span>${tog("keys")}</div>
+        </div>
+        <div class="sbox"><div class="eyebrow">Hesap</div>
+          <div class="acct-d"><button class="avatar sm" data-a="editname" aria-label="Adını düzenle">${esc(initials(u.name))}</button><div style="min-width:0"><b>${esc(u.name)}</b><small>${esc(u.email ? u.email + " · " + via : via)}</small></div><button class="linkl" data-a="logout">Çıkış yap</button></div>
+          <div class="resetrow"><button class="danger" data-a="confirmreset">İlerlemeyi sıfırla</button><span class="c-muted" style="font-size:15px">Skorlar ve seriler silinir</span></div>
+        </div>
+        <p class="ver" style="margin:0">hedef. · sürüm ${APP_VERSION} · ${APP_BUILD}</p>
+      </div>
+    </div>
+  </div>`;
+}
+
 /* ================= confetti ================= */
 function confetti() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1094,6 +1375,7 @@ const A = {
   scrim: (v, el, e) => { if (e.target === el) A.close(); },
   play: () => { if (S.session) playRound(S.session); else go("setup"); },
   daily: () => startDaily(),
+  quick: v => { S.settings.level = v; saveSettings(); ac(); startGame({ mode: S.settings.mode, level: v, count: S.settings.count }); },
   set: (v, el) => { const k = el.dataset.k; S.settings[k] = k === "count" ? Number(v) : v; saveSettings(); render(); },
   start: () => { ac(); startGame({ mode: S.settings.mode, level: S.settings.level, count: S.settings.count }); },
   tile: v => pickTile(Number(v)),
@@ -1135,6 +1417,7 @@ document.addEventListener("submit", e => {
 document.addEventListener("keydown", e => {
   if (S.sheet && e.key === "Escape") { A.close(); return; }
   if (S.screen === "result" && e.key === "Enter" && !S.sheet && !e.target.closest("button")) { nextRound(); return; }
+  if (S.screen === "setup" && e.key === "Enter" && !S.sheet && !e.target.closest("button")) { A.start(); return; }
   if (S.screen !== "game" || !G || S.sheet || e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key;
   if (k === "p" || k === "P" || (k === "Escape" && G.paused)) { A.pause(); return; }
@@ -1152,6 +1435,7 @@ document.addEventListener("keydown", e => {
 });
 document.addEventListener("visibilitychange", () => { if (document.hidden && G && !G.over && S.screen === "game" && !G.paused) { G.paused = true; render(); } });
 
+matchMedia(DESK).addEventListener("change", () => render());
 /* ================= boot ================= */
 applyTheme(); syncMusic();
 S.screen = S.user ? "home" : "login";
