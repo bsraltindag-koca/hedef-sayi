@@ -96,8 +96,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .authbtn{display:flex;align-items:center;gap:18px;text-align:left}
 .authbtn .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none}
 .authbtn .ic svg{width:24px;height:24px}
-.b-paper .ic{background:#e6e2f6}
-.b-lime .ic{background:var(--on-accent);color:var(--lime)}
+.authbtn .ic{background:none!important;color:var(--on-accent)}
+.authbtn .ic svg{width:22px!important;height:22px!important}
 .or{display:flex;align-items:center;gap:16px;color:var(--muted)}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .legal{color:var(--faint);text-align:center;font-size:15px;line-height:1.5;margin:0}
@@ -522,7 +522,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.9";
+const APP_VERSION = "2.0";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
