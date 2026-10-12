@@ -515,6 +515,13 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .scrim.pop{display:block;background:transparent}
   .scrim.pop .sheet{position:absolute;top:92px;right:max(16px,calc((100vw - 1200px) / 2 + 40px));width:360px;box-shadow:0 20px 60px rgba(0,0,0,.45);border:1px solid var(--line);padding:22px 22px 10px;gap:12px}
 }
+.resume{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 14px 22px;border-radius:20px;text-align:left;width:100%}
+.resume .rs-txt{min-width:0}
+.resume b{display:block;font-size:17px}
+.resume small{color:var(--muted);font-size:14px}
+.resume .rs-go{width:44px;height:44px;border-radius:50%;background:var(--lime);color:var(--on-accent);display:grid;place-items:center;flex:none}
+.dhome .resume{margin-top:22px}
+.rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
 .pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
@@ -524,7 +531,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.3";
+const APP_VERSION = "2.4";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -936,15 +943,15 @@ function vHome() {
       <div class="stat"><small>İsabet</small><b class="c-lime">%${pct}</b></div>
     </div>
     <button class="b3 b-lime playcard" data-a="play">
-      <div><h2>Oyna</h2><p>${S.session ? `Kaldığın yerden: Tur ${S.session.round} / ${S.session.total}` : "Yeni oyun kur ve başla"}</p></div>
+      <div><h2>Oyna</h2><p>Mod ve seviyeni seç, başla</p></div>
       <span class="playbtn">${I.play.replace("<svg", '<svg width="30" height="30"')}</span>
     </button>
+    ${resumeBar()}
     <button class="b3 b-amber dailycard" data-a="daily">
       <div><h3>Günün bulmacası</h3><p>${done ? (done.diff === 0 ? `Bugün çözüldü · +${fmt(done.pts)} puan` : `Bugün ${done.diff} kala bitti · tekrar dene`) : "Herkes aynı sayılarla oynar"}</p></div>
       <span class="dt">${now.getDate()} ${MONTHS[now.getMonth()]}</span>
     </button>
     <div class="menu">
-      ${S.session ? `<button data-a="go" data-v="setup">${I.plus}Yeni oyun<span class="chev">›</span></button>` : ""}
       <button data-a="go" data-v="stats">${I.chart}İstatistikler<span class="chev">›</span></button>
       <button data-a="howto">${I.help}Nasıl oynanır<span class="chev">›</span></button>
       <button data-a="go" data-v="settings">${I.gear}Ayarlar<span class="chev">›</span></button>
@@ -971,6 +978,7 @@ function vSetup() {
     <div class="seg3">${[4, 5, 6].map(n => `<button class="b3 ${s.count === n ? "on b-pink" : "b-tile"}" data-a="set" data-k="count" data-v="${n}">${n}</button>`).join("")}</div>
     <div class="spacer"></div>
     <div class="bestline"><span>En iyi skor</span><b class="num">${fmt(S.best)}</b></div>
+    ${resumeNote()}
     <button class="b3 b-paper big" data-a="start">Oyuna başla</button>
   </div>`;
 }
@@ -1254,6 +1262,13 @@ function vSheet() {
   return `<div class="scrim ${sh.type === "profile" ? "pop" : ""}" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
 }
 
+function resumeBar() {
+  const se = S.session; if (!se) return "";
+  return `<button class="b3 b-tile resume" data-a="resume">
+      <span class="rs-txt"><b>Kaldığın yerden devam et</b><small>${se.mode === "sureli" ? "Süreli" : "Serbest"} · ${LEVELS[se.level].name} · Tur ${se.round}/${se.total} · ${fmt(se.score)} puan</small></span>
+      <span class="rs-go">${I.play.replace("<svg", '<svg width="18" height="18"')}</span></button>`;
+}
+const resumeNote = () => S.session ? `<p class="rnote2">Yeni oyun başlatınca yarım kalan oyunun (Tur ${S.session.round}/${S.session.total}) silinir.</p>` : "";
 /* ================= desktop views ================= */
 function deskNav(active) {
   const u = S.user || { name: "Misafir" };
@@ -1289,8 +1304,7 @@ function dHome() {
   const exact = S.history.filter(h => h.diff === 0).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
   const now = new Date(), done = S.daily[dayKey()];
   const modeName = m => m === "sureli" ? "Süreli" : "Serbest";
-  const playTags = se ? `<span class="tag">Kaldığın yerden</span><span class="tag">${modeName(se.mode)} · ${LEVELS[se.level].name} · Tur ${se.round}/${se.total}</span>`
-    : `<span class="tag">Yeni oyun</span><span class="tag">${modeName(s.mode)} · ${LEVELS[s.level].name} · ${s.count} sayı</span>`;
+  const playTags = `<span class="tag">Yeni oyun</span><span class="tag">${modeName(s.mode)} · ${LEVELS[s.level].name} · ${s.count} sayı</span>`;
   const recent = S.history.slice(-5).reverse();
   const recRows = recent.length ? recent.map(h => `<div class="rec"><span class="dot" style="background:${h.diff === 0 ? "var(--lime)" : h.diff <= 5 ? "var(--amber)" : "var(--pink)"}"></span>
       <div><b>Hedef ${h.target}</b><small>${h.diff === 0 ? "Tam isabet" : h.diff + " farkla"} · ${fmtT(h.time)}</small></div><span class="p">+${fmt(h.pts)}</span></div>`).join("")
@@ -1302,7 +1316,7 @@ function dHome() {
         <div class="dcards">
           <button class="b3 b-lime dplay" data-a="play">
             <div class="tags">${playTags}</div>
-            <div class="dcard-bot"><div><h2>Oyna</h2><p>${se ? `Hedef ${se.current.target} seni bekliyor.` : "Modunu ve seviyeni seç, başla."}</p></div>
+            <div class="dcard-bot"><div><h2>Oyna</h2><p>Modunu ve seviyeni seç, başla.</p></div>
             <span class="playbtn">${I.play.replace("<svg", '<svg width="26" height="26"')}</span></div>
           </button>
           <button class="b3 b-amber ddaily" data-a="daily">
@@ -1311,6 +1325,7 @@ function dHome() {
             <div><h3>Herkes aynı sayılarla</h3><p>${done ? (done.diff === 0 ? `Bugün çözdün · +${fmt(done.pts)} puan` : `Bugün ${done.diff} kala bitti · tekrar dene`) : "6 sayı · Orta seviye · süre yok"}</p></div>
           </button>
         </div>
+        ${resumeBar()}
         <div class="qhead"><div class="eyebrow">Hızlı başla</div><button class="linkl" data-a="go" data-v="setup">Tüm ayarlarla yeni oyun</button></div>
         <div class="qstart">${Object.entries(LEVELS).map(([k, L]) => `<button class="b3 b-tile" data-a="quick" data-v="${k}">${L.name} <span>${k === "uzman" ? "4+ adım" : L.min + "–" + L.max}</span></button>`).join("")}</div>
       </div>
@@ -1348,7 +1363,7 @@ function dSetup() {
           <div class="kv"><span>Sayı adedi</span><b>${s.count}</b></div>
           <div class="kv"><span>İpucu hakkı</span><b>${s.hints}</b></div>
           <div class="tot"><span>En iyi skorun</span><b>${fmt(S.best)}</b></div></div></div>
-        <button class="b3 b-lime finish" data-a="start">Oyuna başla ↵</button>
+        <div style="display:flex;flex-direction:column;gap:10px">${resumeNote()}<button class="b3 b-lime finish" data-a="start">Oyuna başla ↵</button></div>
       </div>
     </div>
   </div>`;
@@ -1414,7 +1429,8 @@ const A = {
   howto: () => { S.sheet = { type: "howto" }; render(); },
   close: () => { S.sheet = null; render(); },
   scrim: (v, el, e) => { if (e.target === el) A.close(); },
-  play: () => { if (S.session) playRound(S.session); else go("setup"); },
+  play: () => go("setup"),
+  resume: () => { if (S.session) playRound(S.session); },
   daily: () => startDaily(),
   quick: v => { S.settings.level = v; saveSettings(); ac(); startGame({ mode: S.settings.mode, level: v, count: S.settings.count }); },
   set: (v, el) => { const k = el.dataset.k; S.settings[k] = k === "count" ? Number(v) : v; saveSettings(); render(); },
