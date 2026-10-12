@@ -602,7 +602,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "3.0";
+const APP_VERSION = "3.1";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -1064,7 +1064,6 @@ function vSetup() {
     <div class="grid2">${lv}</div>
     ${countSlider()}
     <div class="spacer"></div>
-    <div class="bestline"><span>En iyi skor</span><b class="num">${fmt(S.best)}</b></div>
     ${resumeNote()}
     <button class="b3 b-paper big" data-a="start">Oyuna başla</button>
   </div>`;
@@ -1459,7 +1458,7 @@ function dSetup() {
           <div class="kv"><span>Seviye</span><b>${L.name}</b></div>
           <div class="kv"><span>Sayı adedi</span><b class="cs-val">${s.count}</b></div>
           <div class="kv"><span>İpucu hakkı</span><b>${s.hints}</b></div>
-          <div class="tot"><span>En iyi skorun</span><b>${fmt(S.best)}</b></div></div></div>
+</div></div>
         <div style="display:flex;flex-direction:column;gap:10px">${resumeNote()}<button class="b3 b-lime finish" data-a="start">Oyuna başla ↵</button></div>
       </div>
     </div>
