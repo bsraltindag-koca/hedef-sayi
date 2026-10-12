@@ -88,6 +88,11 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .fl2{right:-6px;top:112px;width:72px;height:72px;border-radius:50%;background:var(--pink);--sh:var(--pink-shade);color:var(--on-accent);font-size:32px}
 .fl3{right:-28px;top:196px;width:104px;height:104px;border-radius:26px;background:var(--amber);--sh:var(--amber-shade);color:var(--on-accent);font-size:44px;transform:rotate(9deg)}
 .login .col{padding-top:120px;position:relative}
+.login .col > .b3{width:100%;max-width:320px;align-self:center;min-height:54px;font-size:17px;border-radius:18px}
+.login .col > .authbtn{padding:8px 16px 8px 10px;gap:14px}
+.login .col > .authbtn .ic{width:38px;height:38px;border-radius:10px}
+.login .col > .authbtn .ic svg{width:20px;height:20px}
+.login .or,.login .col > .eyebrow{width:100%;max-width:320px;align-self:center}
 .authbtn{display:flex;align-items:center;gap:18px;text-align:left}
 .authbtn .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none}
 .authbtn .ic svg{width:24px;height:24px}
@@ -517,7 +522,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.8";
+const APP_VERSION = "1.9";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
