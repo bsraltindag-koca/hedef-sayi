@@ -393,6 +393,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
+const APP_VERSION = "1.2";
+const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
   get(k, d) { try { const v = localStorage.getItem("hedef:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
@@ -770,6 +772,7 @@ function vLogin() {
     <div class="spacer"></div>
     <div class="or">ya da</div>
     <button class="b3 b-tile big" data-a="guest">Misafir olarak oyna</button>
+    <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
     <p class="legal">Devam ederek <a href="#kosullar" data-a="legal">Kullanım Koşulları</a>'nı ve <a href="#gizlilik" data-a="legal">Gizlilik Politikası</a>'nı kabul etmiş olursun.</p>
   </div></div>`;
 }
@@ -802,6 +805,7 @@ function vHome() {
     </div>
     <div class="spacer"></div>
     <button class="link" style="align-self:center;padding:12px" data-a="logout">Çıkış yap</button>
+    <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
   </div>`;
 }
 function vSetup() {
@@ -972,7 +976,7 @@ function vSettings() {
       <button class="acct" data-a="editname"><span class="avatar sm">${esc(initials(u.name))}</span><span style="min-width:0"><b>${esc(u.name)}</b><small>${esc(u.email || (u.via ? u.via + " hesabı" : "Misafir hesabı"))}</small></span><span class="c-muted" style="margin-left:auto;font-family:var(--mono)">›</span></button>
       <button class="danger" data-a="confirmreset">İlerlemeyi sıfırla</button>
     </div></div>
-    <p class="ver">hedef. · sürüm 1.0</p>
+    <p class="ver">hedef. · sürüm ${APP_VERSION} · ${APP_BUILD}</p>
   </div>`;
 }
 function vStats() {
