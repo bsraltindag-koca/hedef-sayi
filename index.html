@@ -574,6 +574,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .sumlist div{font-size:14px}
   .stepper b{font-size:24px}
 }
+.mode .rt.inf{font-size:36px!important;line-height:1;font-family:var(--body);font-weight:700}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -581,7 +582,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.6";
+const APP_VERSION = "2.7";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -1022,7 +1023,7 @@ function vSetup() {
     <p class="lead">Sayıları birleştir, hedefi tuttur. Her sayı yalnızca bir kez.</p>
     <div class="eyebrow">Mod</div>
     <button class="b3 mode ${s.mode === "sureli" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="sureli"><span class="radio"></span><div><h3>Süreli</h3><p>Her tur ${fmtT(s.duration).replace(/^0/, "")}. Hız bonusu var.</p></div><span class="rt">${fmtT(s.duration).replace(/^0/, "")}</span></button>
-    <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt">∞</span></button>
+    <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt inf" aria-label="süresiz">∞</span></button>
     <div class="eyebrow">Seviye</div>
     <div class="grid2">${lv}</div>
     <div class="eyebrow">Sayı adedi</div>
@@ -1401,7 +1402,7 @@ function dSetup() {
         <div class="eyebrow">Mod</div>
         <div class="dmodes">
           <button class="b3 mode ${s.mode === "sureli" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="sureli"><span class="radio"></span><div><h3>Süreli</h3><p>Her tur ${dur}. Hız bonusu var.</p></div><span class="rt">${dur}</span></button>
-          <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt">∞</span></button>
+          <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt inf" aria-label="süresiz">∞</span></button>
         </div>
         <div class="eyebrow" style="margin-top:10px">Seviye</div>
         <div class="dlvls">${lv}</div>
