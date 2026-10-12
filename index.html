@@ -498,6 +498,13 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .sheet .row button,.sheet .one{min-height:56px;font-size:18px}
 .sheet .mi{display:flex;align-items:center;gap:14px;padding:16px 4px;font-weight:700;font-size:18px;border-top:1px solid var(--line);text-align:left;width:100%}
 .sheet .mi svg{width:22px;height:22px;color:var(--muted)}
+.prof{display:flex;align-items:center;gap:14px}
+.prof b{display:block;font-size:20px}
+.prof small{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+@media (min-width:920px){
+  .scrim.pop{display:block;background:transparent}
+  .scrim.pop .sheet{position:absolute;top:92px;right:max(16px,calc((100vw - 1200px) / 2 + 40px));width:360px;box-shadow:0 20px 60px rgba(0,0,0,.45);border:1px solid var(--line);padding:22px 22px 10px;gap:12px}
+}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
 .pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
@@ -507,7 +514,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.3";
+const APP_VERSION = "1.4";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -565,6 +572,7 @@ const I = {
   chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 15l4-4 3 3 5-6"/></svg>',
   help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   exit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 17l5-5-5-5M15 12H3"/></svg>',
   mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/></svg>',
@@ -900,7 +908,7 @@ function vHome() {
   const now = new Date(), done = S.daily[dayKey()];
   const first = u.name.split(" ")[0];
   return `<div class="col">
-    <div class="home-head">${logo()}<button class="avatar" data-a="go" data-v="settings" aria-label="Ayarlar">${esc(initials(u.name))}</button></div>
+    <div class="home-head">${logo()}<button class="avatar" data-a="profile" aria-label="Profil">${esc(initials(u.name))}</button></div>
     <div class="hello"><small>Merhaba ${esc(first)},</small><h1>Bugün hangi sayıyı vuruyoruz?</h1></div>
     <div class="statrow">
       <div class="stat"><small>Seri</small><b class="c-pink">${st.cur} gün</b></div>
@@ -1136,8 +1144,8 @@ function vStats() {
   const tabs = `<div class="seg" role="tablist">${[["hafta", "Hafta"], ["ay", "Ay"], ["tumu", "Tümü"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div>`;
   const desk = isDesk();
   const head = desk
-    ? `${deskNav("stats")}<div class="dhead"><h1>Rapor</h1><div class="seg" role="tablist">${[["hafta", "Bu hafta"], ["ay", "Bu ay"], ["tumu", "Tüm zamanlar"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div></div>`
-    : `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>Rapor</h1><span class="spacer"></span>${tabs}</div>`;
+    ? `${deskNav("stats")}<div class="dhead"><h1>İstatistikler</h1><div class="seg" role="tablist">${[["hafta", "Bu hafta"], ["ay", "Bu ay"], ["tumu", "Tüm zamanlar"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div></div>`
+    : `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>İstatistikler</h1><span class="spacer"></span>${tabs}</div>`;
   if (!H.length) return `<div class="${desk ? "dpage" : "col"}">${head}<div class="panel emptystate"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
   const total = H.reduce((a, h) => a + h.pts, 0), exact = H.filter(h => h.diff === 0);
   let change = "";
@@ -1210,17 +1218,25 @@ function vSheet() {
     <button class="b3 b-lime one" data-a="close">Oyuna dön</button>`;
   else if (sh.type === "share") body = `<h2>Sonucu paylaş</h2><p>Metni seçip kopyala.</p><textarea id="sharetxt" readonly style="width:100%;min-height:160px;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;font-family:var(--mono);font-size:15px">${esc(sh.text)}</textarea><button class="b3 b-lime one" data-a="close">Tamam</button>`;
   else if (sh.type === "hint") body = `<div class="hh" style="display:flex;justify-content:space-between"><h2 class="c-lime">İpucu</h2><span style="font-family:var(--mono);color:var(--muted)">${G.hint.free ? "ücretsiz" : "−150 puan"}</span></div><p style="color:var(--ink);font-size:19px">${esc(G.hint.text)}</p><button class="b3 b-lime one" data-a="close">Tamam</button>`;
+  else if (sh.type === "profile") {
+    const u = S.user || { name: "Misafir" }, n = S.history.length, ex = S.history.filter(h => h.diff === 0).length;
+    const via = u.via === "E-posta" ? "e-posta ile giriş" : u.via ? u.via + " ile giriş" : "misafir hesabı";
+    body = `<div class="prof"><span class="avatar">${esc(initials(u.name))}</span><div style="min-width:0"><b>${esc(u.name)}</b><small>${esc(u.email ? u.email + " · " + via : via)}</small></div></div>
+    <p>${n ? `${n} tur oynadın, ${ex} tanesinde hedefi tam tutturdun.` : "Henüz tur oynamadın."}</p>
+    <button class="mi" data-a="editname">${I.pen}Adını düzenle</button>
+    <button class="mi" data-a="logout">${I.exit}Çıkış yap</button>`;
+  }
   else if (sh.type === "legal") body = `<h2>Koşullar ve gizlilik</h2><p>hedef. skorlarını ve ayarlarını yalnızca bu cihazdaki tarayıcı depolamasında tutar. Hiçbir veri bir sunucuya gönderilmez.</p><button class="b3 b-lime one" data-a="close">Tamam</button>`;
-  return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
+  return `<div class="scrim ${sh.type === "profile" ? "pop" : ""}" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
 }
 
 /* ================= desktop views ================= */
 function deskNav(active) {
   const u = S.user || { name: "Misafir" };
-  const items = [["home", "Ana sayfa"], ["stats", "Rapor"], ["settings", "Ayarlar"], ["howto", "Nasıl oynanır"]];
+  const items = [["home", "Ana sayfa"], ["stats", "İstatistikler"], ["settings", "Ayarlar"], ["howto", "Nasıl oynanır"]];
   return `<header class="dnav">${logo()}
     <nav class="dtabs">${items.map(([k, l]) => `<button class="${active === k ? "on" : ""}" ${k === "howto" ? 'data-a="howto"' : `data-a="go" data-v="${k}"`}>${l}</button>`).join("")}</nav>
-    <button class="duser" data-a="go" data-v="settings"><span>${esc(u.name)}</span><span class="avatar xs">${esc(initials(u.name))}</span></button></header>`;
+    <button class="duser" data-a="profile" aria-haspopup="dialog"><span>${esc(u.name)}</span><span class="avatar xs">${esc(initials(u.name))}</span></button></header>`;
 }
 function dLogin() {
   return `<div class="dlogin">
@@ -1276,7 +1292,7 @@ function dHome() {
       </div>
       <aside class="dside">
         <div class="dstat"><div><small>Seri</small><b class="c-pink">${st.cur} gün</b></div><div><small>En iyi</small><b>${fmt(S.best)}</b></div><div><small>İsabet</small><b class="c-lime">%${pct}</b></div></div>
-        <div class="recent"><div class="ph"><h3>Son turlar</h3><button class="linkl" data-a="go" data-v="stats">Rapora git</button></div>${recRows}</div>
+        <div class="recent"><div class="ph"><h3>Son turlar</h3><button class="linkl" data-a="go" data-v="stats">Tümünü gör</button></div>${recRows}</div>
         <p class="ver" style="margin:0">sürüm ${APP_VERSION}</p>
       </aside>
     </div>
@@ -1370,6 +1386,7 @@ const A = {
   legal: () => { S.sheet = { type: "legal" }; render(); },
   logout: () => { S.user = null; store.del("user"); go("login"); },
   go: v => { if (v === "settings") S.back = S.screen; go(v); },
+  profile: () => { S.sheet = { type: "profile" }; render(); },
   howto: () => { S.sheet = { type: "howto" }; render(); },
   close: () => { S.sheet = null; render(); },
   scrim: (v, el, e) => { if (e.target === el) A.close(); },
