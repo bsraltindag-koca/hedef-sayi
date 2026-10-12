@@ -387,9 +387,9 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .dl-hero{display:flex;flex-direction:column;gap:48px}
 .dl-left h1{font-size:clamp(56px,6vw,84px);line-height:.95;letter-spacing:-.05em;font-weight:800}
 .dl-eq{display:flex;align-items:center;gap:16px}
-.dt{display:grid;place-items:center;width:100px;height:100px;border-radius:22px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:38px;flex:none}
-.dt.t1{transform:rotate(-4deg)} .dt.t2{transform:rotate(3deg)}
-.dt.res{width:130px;background:var(--amber);color:var(--on-accent);box-shadow:0 7px 0 var(--amber-shade);transform:rotate(2deg)}
+.eqt{display:grid;place-items:center;width:100px;height:100px;border-radius:22px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:38px;flex:none}
+.eqt.t1{transform:rotate(-4deg)} .eqt.t2{transform:rotate(3deg)}
+.eqt.res{width:130px;background:var(--amber);color:var(--on-accent);box-shadow:0 7px 0 var(--amber-shade);transform:rotate(2deg)}
 .dop{width:70px;height:70px;border-radius:50%;background:var(--pink);box-shadow:0 6px 0 var(--pink-shade);color:var(--on-accent);display:grid;place-items:center;font-size:26px;font-weight:800;flex:none}
 .deq{font-size:36px;color:var(--faint);font-weight:800}
 .dl-card{background:var(--surface);border-radius:32px;padding:44px;display:flex;flex-direction:column;gap:16px;align-self:center}
@@ -514,7 +514,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "1.4";
+const APP_VERSION = "1.5";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -1243,7 +1243,7 @@ function dLogin() {
     <div class="dl-left">${logo()}
       <div class="dl-hero">
         <h1>Sayıları<br>birleştir,<br><span class="c-lime">hedefi tuttur.</span></h1>
-        <div class="dl-eq" role="img" aria-label="50 çarpı 10 eşittir 500"><span class="dt t1">50</span><span class="dop">×</span><span class="dt t2">10</span><span class="deq">=</span><span class="dt res">500</span></div>
+        <div class="dl-eq" role="img" aria-label="50 çarpı 10 eşittir 500"><span class="eqt t1">50</span><span class="dop">×</span><span class="eqt t2">10</span><span class="deq">=</span><span class="eqt res">500</span></div>
       </div>
       <p class="c-muted" style="margin:0;font-size:17px">Her gün yeni bir hedef. Her sayı yalnızca bir kez.</p>
     </div>
