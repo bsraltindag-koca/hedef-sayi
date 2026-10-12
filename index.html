@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>hedef.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: dark arcade-desk — one centred phone column for menus, a two-pane board + receipt rail for play on wide screens. */
+:root{
+  --bg:#12101d; --surface:#1c192d; --tile:#2c2648; --tile-shade:#141120; --tile-dim:#1c1830;
+  --ink:#f4f1ff; --muted:#a59dc9; --faint:#5f5784; --line:#2b2641; --dot:#25213a;
+  --lime:#c8ff4d; --lime-shade:#7a9f25; --lime-ink:#c8ff4d;
+  --pink:#ff5d8b; --pink-shade:#a8325a; --pink-ink:#ff6f97;
+  --amber:#ffc24d; --amber-shade:#9a6b14; --amber-ink:#ffc24d;
+  --violet:#8e7cff;
+  --paper:#f3f1ff; --paper-ink:#16131f; --paper-muted:#8a83a8; --paper-line:#cdc6e3;
+  --on-accent:#121019; --scrim:rgba(8,6,16,.72);
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+:root.t-day, :root.t-sys[data-theme="light"]{
+  --bg:#f2effa; --surface:#ffffff; --tile:#ffffff; --tile-shade:#cdc6e6; --tile-dim:#e7e2f4;
+  --ink:#1b1730; --muted:#676087; --faint:#b0a8cf; --line:#e2ddf0; --dot:#dcd6ee;
+  --lime-shade:#8db62e; --lime-ink:#4c7600; --pink-ink:#d2335f; --amber-ink:#a06400;
+  --paper:#ffffff; --scrim:rgba(40,32,70,.45); color-scheme:light;
+}
+@media (prefers-color-scheme: light){
+  :root.t-sys:not([data-theme="dark"]){
+    --bg:#f2effa; --surface:#ffffff; --tile:#ffffff; --tile-shade:#cdc6e6; --tile-dim:#e7e2f4;
+    --ink:#1b1730; --muted:#676087; --faint:#b0a8cf; --line:#e2ddf0; --dot:#dcd6ee;
+    --lime-shade:#8db62e; --lime-ink:#4c7600; --pink-ink:#d2335f; --amber-ink:#a06400;
+    --paper:#ffffff; --scrim:rgba(40,32,70,.45); color-scheme:light;
+  }
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg) radial-gradient(var(--dot) 1.2px,transparent 1.6px) 0 0/22px 22px;color:var(--ink);font-family:var(--body);font-size:16px;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+input{font:inherit}
+.num{font-variant-numeric:tabular-nums}
+#app{min-height:100%;display:flex;flex-direction:column}
+
+/* ---------- shared ---------- */
+.col{width:100%;max-width:460px;margin:0 auto;padding:28px 20px 32px;display:flex;flex-direction:column;gap:18px;flex:1}
+.logo{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:.9;font-size:30px;font-variation-settings:"opsz" 96}
+.logo i{font-style:normal;color:var(--lime-ink)}
+.logo.xl{font-size:clamp(72px,22vw,104px)}
+.eyebrow{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.lead{color:var(--muted);font-size:19px;line-height:1.4;margin:0;text-wrap:pretty}
+h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:balance;font-variation-settings:"opsz" 96}
+.b3{position:relative;border-radius:22px;font-weight:700;transition:transform .08s,box-shadow .08s;box-shadow:0 6px 0 var(--sh,var(--tile-shade))}
+.b3:active{transform:translateY(4px);box-shadow:0 2px 0 var(--sh,var(--tile-shade))}
+.b-lime{background:var(--lime);color:var(--on-accent);--sh:var(--lime-shade)}
+.b-pink{background:var(--pink);color:var(--on-accent);--sh:var(--pink-shade)}
+.b-amber{background:var(--amber);color:var(--on-accent);--sh:var(--amber-shade)}
+.b-paper{background:var(--paper);color:var(--paper-ink);--sh:#7d74a3}
+.b-tile{background:var(--tile);color:var(--ink)}
+.big{min-height:64px;padding:16px 22px;font-size:20px;width:100%}
+.iconbtn{width:48px;height:48px;border-radius:14px;background:var(--tile);display:grid;place-items:center;flex:none}
+.iconbtn svg{width:20px;height:20px}
+.toprow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.toprow h1{font-size:34px}
+.card{background:var(--surface);border-radius:22px}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:var(--surface);border-radius:18px;padding:14px 16px;min-width:0}
+.stat small{display:block;color:var(--muted);font-size:14px;margin-bottom:4px}
+.stat b{font-family:var(--display);font-size:clamp(20px,6vw,28px);font-weight:800;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.c-lime{color:var(--lime-ink)} .c-pink{color:var(--pink-ink)} .c-amber{color:var(--amber-ink)} .c-muted{color:var(--muted)}
+.spacer{flex:1}
+.link{color:var(--muted);text-decoration:underline;text-underline-offset:4px;font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;z-index:80;max-width:calc(100% - 32px);text-align:center;animation:pop .2s ease-out}
+@keyframes pop{from{opacity:0;transform:translate(-50%,8px)}}
+
+/* ---------- login ---------- */
+.login{position:relative;overflow:hidden}
+.floaters{position:absolute;right:-30px;top:40px;width:180px;height:320px;pointer-events:none}
+.fl{position:absolute;display:grid;place-items:center;font-family:var(--display);font-weight:800;box-shadow:0 8px 0 var(--sh)}
+.fl1{right:20px;top:0;width:112px;height:112px;border-radius:26px;background:var(--tile);--sh:var(--tile-shade);font-size:40px;transform:rotate(-8deg)}
+.fl2{right:-10px;top:130px;width:84px;height:84px;border-radius:50%;background:var(--pink);--sh:var(--pink-shade);color:var(--on-accent);font-size:32px}
+.fl3{right:-34px;top:230px;width:120px;height:120px;border-radius:26px;background:var(--amber);--sh:var(--amber-shade);color:var(--on-accent);font-size:44px;transform:rotate(9deg)}
+.login .col{padding-top:120px}
+.authbtn{display:flex;align-items:center;gap:18px;text-align:left}
+.authbtn .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none}
+.authbtn .ic svg{width:24px;height:24px}
+.b-paper .ic{background:#e6e2f6}
+.b-lime .ic{background:var(--on-accent);color:var(--lime)}
+.or{display:flex;align-items:center;gap:16px;color:var(--muted)}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.legal{color:var(--faint);text-align:center;font-size:15px;line-height:1.5;margin:0}
+.legal a{color:var(--lime-ink);font-weight:600}
+
+/* ---------- home ---------- */
+.home-head{display:flex;justify-content:space-between;align-items:center}
+.avatar{width:58px;height:58px;border-radius:50%;border:3px solid var(--lime);background:var(--tile);display:grid;place-items:center;font-weight:800;font-size:18px}
+.avatar.sm{width:52px;height:52px;font-size:16px}
+.hello small{color:var(--muted);font-size:19px}
+.hello h1{font-size:clamp(34px,10vw,46px);line-height:1.02;margin-top:6px}
+.playcard{display:flex;align-items:center;justify-content:space-between;padding:26px 24px 26px 28px;text-align:left;border-radius:28px;gap:12px}
+.playcard h2{font-size:34px;font-weight:800}
+.playcard p{margin:4px 0 0;font-weight:500;font-size:17px}
+.playbtn{width:74px;height:74px;border-radius:50%;background:var(--on-accent);color:var(--lime);display:grid;place-items:center;flex:none}
+.dailycard{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;text-align:left;border-radius:28px;gap:12px}
+.dailycard h3{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.dailycard p{margin:4px 0 0;font-weight:500}
+.dailycard .dt{font-family:var(--mono);font-weight:800;font-size:20px;white-space:nowrap}
+.menu{background:var(--surface);border-radius:26px;overflow:hidden}
+.menu button{display:flex;align-items:center;gap:18px;width:100%;padding:24px 28px;font-weight:700;font-size:20px;text-align:left}
+.menu button + button{border-top:1px solid var(--line)}
+.menu button:hover{background:color-mix(in srgb,var(--tile) 50%,transparent)}
+.menu svg{width:26px;height:26px;color:var(--muted);flex:none}
+.menu .chev{margin-left:auto;color:var(--faint);font-family:var(--mono)}
+
+/* ---------- setup ---------- */
+.mode{display:flex;align-items:center;gap:18px;padding:20px 24px;text-align:left;width:100%}
+.mode .radio{width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid var(--on-accent);flex:none;display:grid;place-items:center}
+.mode .radio::after{content:"";width:16px;height:16px;border-radius:50%;background:var(--on-accent);opacity:0}
+.mode.on .radio::after{opacity:1}
+.mode.off .radio{border-color:var(--tile-shade)}
+.mode h3{font-size:24px;font-weight:800;letter-spacing:-.01em}
+.mode p{margin:2px 0 0;font-size:16px;font-weight:500}
+.mode.off p{color:var(--muted)}
+.mode .rt{margin-left:auto;font-family:var(--mono);font-weight:800;font-size:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lvl{padding:18px 20px;text-align:left;border-radius:20px;min-height:100px;display:flex;flex-direction:column;gap:6px}
+.lvl.on{box-shadow:0 0 0 4px var(--ink) inset,0 6px 0 var(--pink-shade)}
+.lvl .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lvl h3{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.lvl p{margin:0;font-family:var(--mono);font-size:14px;font-weight:600;line-height:1.3;color:var(--muted)}
+.lvl.on p{color:var(--on-accent)}
+.dots{display:flex;gap:4px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.dots i.f{background:var(--lime)}
+.lvl.on .dots i{background:color-mix(in srgb,var(--on-accent) 25%,transparent)}
+.lvl.on .dots i.f{background:var(--on-accent)}
+.seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.seg3 button{height:68px;font-size:26px;font-weight:800;border-radius:18px}
+.seg3 button.on{box-shadow:0 0 0 4px var(--ink) inset,0 6px 0 var(--pink-shade)}
+.bestline{display:flex;justify-content:space-between;color:var(--muted);font-size:17px}
+.bestline b{color:var(--ink)}
+
+/* ---------- game ---------- */
+.game{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr auto;min-height:100%;flex:1;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));gap:14px;max-width:1400px;margin:0 auto;width:100%}
+.ghead{display:flex;align-items:center;gap:12px}
+.ghead .logo{font-size:28px}
+.pill{background:var(--surface);border-radius:12px;padding:7px 12px;font-weight:700;font-size:15px;white-space:nowrap}
+.pill em{font-style:normal;color:var(--pink-ink)}
+.gmeta{margin-left:auto;display:flex;gap:18px;color:var(--muted);font-size:17px;white-space:nowrap}
+.gmeta b{color:var(--ink);font-size:20px;font-weight:800}
+.gtools{display:none;gap:10px}
+.ghead .backb,.ghead .dk{display:none}
+@media (max-width:919px){.ghead{gap:8px}.ghead .logo{font-size:24px}.gmeta{gap:10px;font-size:15px}.gmeta b{font-size:17px}.pill{padding:6px 10px}}
+.gmain{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
+.ring{position:relative;width:min(72vw,310px);aspect-ratio:1;max-width:100%}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .ctr{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
+.ring .ctr small{font-family:var(--mono);font-weight:700;letter-spacing:.32em;color:var(--muted);font-size:14px;padding-left:.32em}
+.ring .ctr .tgt{font-family:var(--display);font-weight:800;font-size:clamp(78px,24vw,120px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.ring .ctr .tm{font-family:var(--mono);font-weight:800;font-size:22px;color:var(--lime-ink);display:flex;gap:6px;align-items:center;justify-content:center}
+.ring .ctr .tm.warn{color:var(--amber-ink)} .ring .ctr .tm.crit{color:var(--pink-ink)}
+.live{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:20px;padding:12px 18px;width:100%;max-width:420px;justify-content:center;flex-wrap:wrap}
+.live .lv{min-width:84px;height:56px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:28px;padding:0 14px}
+.live .lv.a{background:var(--amber);color:var(--on-accent)}
+.live .lv.slot{border:2.5px dashed var(--faint);color:var(--muted);font-family:var(--body);font-weight:500;font-size:16px}
+.live .lop{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px;background:var(--pink);color:var(--on-accent)}
+.live .lop.empty{background:transparent;border:2.5px dashed var(--faint);color:var(--faint)}
+.live .fark{color:var(--muted);font-size:18px;white-space:nowrap}
+.live .fark b{color:var(--amber-ink);font-size:26px;font-weight:800}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.chip{background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:10px 14px;font-family:var(--mono);font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip i{font-style:normal;color:var(--paper-muted)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;padding-bottom:6px}
+.tile{position:relative;aspect-ratio:1.2;border-radius:20px;background:var(--tile);box-shadow:0 7px 0 var(--tile-shade);font-family:var(--display);font-weight:800;font-size:clamp(28px,8vw,40px);letter-spacing:-.02em;display:grid;place-items:center;transition:transform .08s,box-shadow .08s;font-variant-numeric:tabular-nums;animation:tilein .22s ease-out}
+.tile:active{transform:translateY(4px);box-shadow:0 3px 0 var(--tile-shade)}
+.tile.der{color:var(--amber-ink)}
+.tile.sel{background:var(--amber);color:var(--on-accent);box-shadow:0 0 0 4px var(--ink),0 7px 0 4px var(--amber-shade)}
+.tile.used{background:var(--tile-dim);color:var(--faint);box-shadow:none;cursor:default;animation:none}
+.tile .k{position:absolute;left:10px;top:6px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);display:none}
+.tile.sel .k{color:var(--on-accent)}
+@keyframes tilein{from{transform:scale(.85);opacity:.4}}
+.ops{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;margin-top:auto}
+.op{height:76px;border-radius:40px;font-size:30px;font-weight:800;display:grid;place-items:center}
+.op.on{box-shadow:0 0 0 4px var(--ink) inset,0 6px 0 var(--pink-shade)}
+.gside{display:flex;flex-direction:column;gap:14px;min-width:0}
+.receipt{position:relative;background:var(--paper);color:var(--paper-ink);border-radius:8px 8px 0 0;padding:20px 24px 18px;margin-bottom:10px}
+.receipt::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:10px;background:linear-gradient(135deg,var(--paper) 50%,transparent 50%) 0 0/14px 10px repeat-x,linear-gradient(225deg,var(--paper) 50%,transparent 50%) 0 0/14px 10px repeat-x}
+.receipt .rh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.receipt h3{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.receipt .rh span{font-family:var(--mono);font-size:14px;color:var(--paper-muted);font-weight:600;letter-spacing:.06em}
+.rrow{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-weight:700;font-size:18px;padding:11px 0;border-bottom:1.5px dashed var(--paper-line)}
+.rrow i{font-style:normal;color:var(--paper-muted);margin-right:10px}
+.rrow.pend{color:var(--paper-muted)}
+.rrow b{font-weight:800}
+.rempty{font-family:var(--mono);color:var(--paper-muted);font-size:15px;padding:10px 0 4px;line-height:1.5}
+.hintbox{border:2px dashed var(--faint);border-radius:18px;padding:16px 20px;line-height:1.45}
+.hintbox .hh{display:flex;justify-content:space-between;margin-bottom:6px}
+.hintbox .hh b{color:var(--lime-ink)}
+.hintbox .hh span{font-family:var(--mono);color:var(--muted);font-size:14px}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.acts button{height:58px;border-radius:16px;font-size:17px}
+.acts .hintb{color:var(--lime-ink)}
+.acts button:disabled{opacity:.45;cursor:not-allowed}
+.finish{height:66px;font-size:20px;width:100%}
+.kbd{font-family:var(--mono);font-size:13px;color:var(--faint);text-align:center;line-height:1.6;margin:0}
+.mbar{display:grid;grid-template-columns:repeat(3,58px) 1fr;gap:12px}
+.mbar .ib{height:62px;border-radius:16px;display:grid;place-items:center}
+.mbar .ib svg{width:24px;height:24px}
+.mbar .ib.hintb{color:var(--lime-ink)}
+.mbar .ib:disabled{opacity:.45}
+.mbar .finish{height:62px;font-size:19px}
+.gside .rail-desk{display:none}
+.paused .tiles,.paused .live,.paused .ring .tgt,.paused .chips{filter:blur(14px);pointer-events:none}
+
+@media (min-width:920px){
+  .game{grid-template-columns:minmax(0,1fr) 340px;grid-template-rows:auto 1fr;column-gap:56px;padding:28px 40px 28px}
+  .ghead{grid-column:1/-1}
+  .gtools{display:flex}
+  .ghead .backb{display:grid}.ghead .dk{display:inline}.ghead .mb,.mhint{display:none}
+  .menu-m{display:none}
+  .chips,.mbar{display:none}
+  .gside .rail-desk{display:flex;flex-direction:column;gap:14px}
+  .gside{justify-content:flex-start}
+  .gside .bottom{margin-top:auto;display:flex;flex-direction:column;gap:14px}
+  .tiles{grid-template-columns:repeat(auto-fit,minmax(90px,104px));justify-content:center;padding-bottom:24px}
+  .tile{aspect-ratio:1}
+  .tile .k{display:block}
+  .tile.sel::after{content:"seçili";position:absolute;bottom:-30px;font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:0}
+  .ops{max-width:400px;margin-top:4px}
+  .op{height:76px;width:76px;border-radius:50%;justify-self:center}
+  .ring{width:320px}
+}
+
+/* ---------- result ---------- */
+.result{display:grid;gap:22px;width:100%;max-width:1100px;margin:0 auto;padding:32px 20px calc(24px + env(safe-area-inset-bottom,0px));flex:1;align-content:start}
+.result .eyebrow.lime{color:var(--lime-ink)} .result .eyebrow.amber{color:var(--amber-ink)}
+.result h1{font-size:clamp(64px,19vw,104px);font-weight:800;line-height:.88;letter-spacing:-.055em;margin-top:8px}
+.result .lead{font-size:19px;margin-top:6px}
+.cmp{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.cmp small{display:block;color:var(--muted);margin-bottom:8px}
+.cmp .bx{min-width:120px;height:90px;border-radius:20px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:42px;padding:0 20px}
+.cmp .bx.a{background:var(--amber);color:var(--on-accent);box-shadow:0 7px 0 var(--amber-shade)}
+.cmp .bx.t{border:2.5px dashed var(--faint)}
+.cmp .arr{color:var(--faint);font-size:32px;padding-bottom:24px}
+.paperwrap{transform:rotate(-1.2deg)}
+.paperwrap .receipt{box-shadow:0 18px 50px rgba(0,0,0,.28)}
+.paperwrap .tot{display:flex;justify-content:space-between;align-items:center;padding-top:18px}
+.paperwrap .tot span{color:var(--paper-muted);font-weight:600}
+.paperwrap .tot b{font-family:var(--display);font-size:46px;font-weight:800;letter-spacing:-.04em}
+.rbtns{display:grid;grid-template-columns:1fr 1.8fr;gap:14px}
+.rbtns.stack{grid-template-columns:1fr}
+.rbtns button{min-height:64px;font-size:20px}
+@media (min-width:920px){
+  .result{grid-template-columns:1fr 1fr;column-gap:80px;align-content:center;padding:48px 48px}
+  .result .r-left{display:flex;flex-direction:column;gap:22px;align-self:center}
+  .result .r-right{grid-row:span 2;align-self:center}
+  .rbtns{grid-template-columns:auto auto;justify-content:start}
+  .rbtns button{padding:0 32px}
+  .rbtns.stack{grid-template-columns:auto auto}
+}
+.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+
+/* ---------- summary ---------- */
+.sumlist{background:var(--surface);border-radius:20px;padding:6px 18px}
+.sumlist div{display:grid;grid-template-columns:44px 1fr auto auto;gap:12px;padding:12px 0;font-family:var(--mono);font-weight:600;align-items:center}
+.sumlist div + div{border-top:1px solid var(--line)}
+.sumlist i{font-style:normal;color:var(--muted)}
+.sumlist .p{min-width:70px;text-align:right}
+
+/* ---------- settings ---------- */
+.sec{display:flex;flex-direction:column;gap:12px}
+.sbox{background:var(--surface);border-radius:24px;padding:4px 22px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;min-height:76px}
+.srow + .srow{border-top:1px solid var(--line)}
+.srow .lb{font-weight:700;font-size:19px}
+.srow .lb small{display:block;color:var(--muted);font-weight:500;font-size:15px}
+.seg{display:flex;background:var(--bg);border-radius:14px;padding:5px;gap:2px;flex:none}
+.seg button{padding:10px 14px;border-radius:10px;font-weight:700;color:var(--muted);font-size:16px}
+.seg button.mono{font-family:var(--mono)}
+.seg button.on{background:var(--lime);color:var(--on-accent)}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{width:48px;height:48px;border-radius:50%;background:var(--tile);font-size:22px;font-weight:800}
+.stepper b{font-family:var(--display);font-size:28px;min-width:22px;text-align:center}
+.tog{width:76px;height:44px;border-radius:30px;background:var(--tile);position:relative;flex:none;transition:background .15s}
+.tog::after{content:"";position:absolute;top:6px;left:6px;width:32px;height:32px;border-radius:50%;background:var(--faint);transition:transform .15s,background .15s}
+.tog.on{background:var(--lime)}
+.tog.on::after{transform:translateX(32px);background:var(--on-accent)}
+.acct{display:flex;align-items:center;gap:16px;padding:18px 0;width:100%;text-align:left}
+.acct b{font-size:19px;display:block}
+.acct small{color:var(--muted);font-size:15px}
+.danger{color:var(--pink-ink);font-weight:700;font-size:19px;padding:22px 0;text-align:left;width:100%;border-top:1px solid var(--line)}
+.ver{text-align:center;font-family:var(--mono);color:var(--faint);margin:10px 0 0}
+
+/* ---------- stats ---------- */
+.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sc{background:var(--surface);border-radius:22px;padding:18px 20px;min-width:0}
+.sc small{color:var(--muted);font-size:15px;display:block}
+.sc b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(30px,9vw,42px);letter-spacing:-.03em;margin:4px 0;font-variant-numeric:tabular-nums}
+.sc span{font-family:var(--mono);font-size:14px;color:var(--muted);line-height:1.35;display:block}
+.sc.hero{background:var(--lime);color:var(--on-accent)}
+.sc.hero small,.sc.hero span{color:var(--on-accent)}
+.panel{background:var(--surface);border-radius:24px;padding:22px}
+.panel .ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:18px}
+.panel h3{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.panel .ph span{font-family:var(--mono);color:var(--muted);font-size:14px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:190px;border-bottom:1.5px solid var(--line)}
+.bars .bc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;min-width:0}
+.bars .bv{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.bars .bar{width:100%;background:var(--tile);border-radius:8px 8px 0 0;min-height:3px}
+.bars .bc.last .bar{background:var(--lime)}
+.bars .bc.last .bv{color:var(--lime-ink);font-weight:700}
+.blabels{display:flex;gap:8px;margin-top:10px}
+.blabels span{flex:1;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);min-width:0;overflow:hidden}
+.stack{display:flex;height:26px;border-radius:13px;overflow:hidden;gap:3px;background:var(--bg)}
+.stack i{display:block}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin-top:16px}
+.legend div{display:flex;align-items:center;gap:10px;font-weight:600}
+.legend .sw{width:16px;height:16px;border-radius:4px;flex:none}
+.legend b{margin-left:auto}
+.opsuse{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center}
+.opsuse .oc{width:72px;height:72px;border-radius:50%;background:var(--tile);display:grid;place-items:center;margin:0 auto 10px;font-size:26px;font-weight:800;max-width:100%}
+.opsuse .oc.top{background:var(--pink);color:var(--on-accent)}
+.opsuse b{font-family:var(--display);font-size:22px;font-weight:800}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;line-height:1.5}
+
+/* ---------- sheet ---------- */
+.scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:end center;z-index:60;padding:16px;animation:fade .15s}
+@media (min-width:600px){.scrim{place-items:center}}
+@keyframes fade{from{opacity:0}}
+.sheet{background:var(--surface);border-radius:26px;padding:26px 22px calc(22px + env(safe-area-inset-bottom,0px));width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px;max-height:88vh;overflow:auto}
+.sheet h2{font-size:28px;font-weight:800}
+.sheet p{margin:0;color:var(--muted);line-height:1.5}
+.sheet ol{margin:0;padding-left:22px;line-height:1.55;color:var(--muted)}
+.sheet ol b{color:var(--ink)}
+.sheet .field{display:flex;flex-direction:column;gap:6px}
+.sheet label{font-weight:600;font-size:15px;color:var(--muted)}
+.sheet input{background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink);font-size:18px}
+.sheet input:focus{border-color:var(--lime);outline:none}
+.sheet .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sheet .row button,.sheet .one{min-height:56px;font-size:18px}
+.sheet .mi{display:flex;align-items:center;gap:14px;padding:16px 4px;font-weight:700;font-size:18px;border-top:1px solid var(--line);text-align:left;width:100%}
+.sheet .mi svg{width:22px;height:22px;color:var(--muted)}
+.pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
+.pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ================= storage ================= */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("hedef:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("hedef:" + k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem("hedef:" + k); } catch (e) {} }
+};
+const DEFAULTS = { mode: "sureli", duration: 120, count: 6, hints: 3, level: "orta", theme: "gece", sfx: true, music: false, vibe: true };
+const S = {
+  user: store.get("user", null),
+  settings: Object.assign({}, DEFAULTS, store.get("settings", {})),
+  history: store.get("history", []),
+  best: store.get("best", 0),
+  session: store.get("session", null),
+  daily: store.get("daily", {}),
+  screen: "login", period: "hafta", sheet: null, back: null
+};
+const saveSettings = () => store.set("settings", S.settings);
+const saveSession = () => store.set("session", S.session);
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => Number(n).toLocaleString("tr-TR");
+const fmtT = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+const OPSYM = { "+": "+", "-": "−", "*": "×", "/": "÷" };
+const MONTHS = ["OCA", "ŞUB", "MAR", "NİS", "MAY", "HAZ", "TEM", "AĞU", "EYL", "EKİ", "KAS", "ARA"];
+const DAYS = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+const dayKey = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const initials = n => (n || "?").trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toLocaleUpperCase("tr-TR");
+// Turkish accusative suffix for a number as it is read aloud: 5'i, 7'yi, 12'yi, 100'ü
+function acc(n) {
+  const units = ["", "i", "yi", "ü", "ü", "i", "yı", "yi", "i", "u"];
+  const tens = ["", "u", "yi", "u", "ı", "yi", "ı", "i", "i", "ı"];
+  let s;
+  if (n % 10) s = units[n % 10];
+  else if (n % 100) s = tens[(n % 100) / 10];
+  else if (n % 1000) s = "ü";
+  else s = "i";
+  return n + "'" + s;
+}
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const I = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
+  sound: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+  mute: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>',
+  sliders: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>',
+  menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg>',
+  undo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>',
+  reset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4.5h4.5"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 15l4-4 3 3 5-6"/></svg>',
+  help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  exit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 17l5-5-5-5M15 12H3"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/></svg>',
+  apple: '<svg viewBox="0 0 24 24" fill="#16131f"><path d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.9-.9-3.1-.8c-1.6 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3.1.7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.7zM14.1 5.5c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3z"/></svg>',
+  google: '<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 14a6 6 0 0 1 0-3.9V7.5H3.1a10 10 0 0 0 0 9z"/><path fill="#EA4335" d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.5l3.3 2.6C7.2 7.8 9.4 6 12 6z"/></svg>',
+  timer: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>'
+};
+
+/* ================= audio & haptics ================= */
+let AC = null, musicTimer = null;
+function ac() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } } if (AC && AC.state === "suspended") AC.resume(); return AC; }
+function tone(f, d = .08, type = "sine", g = .06, when = 0, force = false) {
+  if (!S.settings.sfx && !force) return; const a = ac(); if (!a) return;
+  const t = a.currentTime + when, o = a.createOscillator(), v = a.createGain();
+  o.type = type; o.frequency.value = f; v.gain.setValueAtTime(g, t); v.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(v).connect(a.destination); o.start(t); o.stop(t + d + .03);
+}
+const sfx = {
+  tap: () => tone(540, .05, "triangle"), op: () => tone(700, .06, "triangle"),
+  combine: () => { tone(523, .09); tone(784, .14, "sine", .05, .06); },
+  err: () => tone(150, .16, "square", .03),
+  win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .2, "triangle", .06, i * .09)),
+  lose: () => [392, 311].forEach((f, i) => tone(f, .24, "sine", .05, i * .14)),
+  tick: () => tone(1250, .03, "square", .015)
+};
+function buzz(ms) { if (S.settings.vibe) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} } }
+function syncMusic() {
+  clearInterval(musicTimer); musicTimer = null;
+  if (!S.settings.music) return;
+  const notes = [262, 294, 330, 392, 440, 523, 587];
+  let i = 0;
+  musicTimer = setInterval(() => { const a = AC; if (!a || a.state !== "running") return; tone(notes[(i * 3 + (i >> 2)) % notes.length] / (i % 4 === 0 ? 2 : 1), .7, "sine", .018, 0, true); i++; }, 420);
+}
+
+/* ================= puzzle generation ================= */
+const LEVELS = {
+  kolay: { name: "Kolay", min: 10, max: 199, steps: 1, large: 1, dots: 1, desc: "Hedef 10–199" },
+  orta: { name: "Orta", min: 100, max: 499, steps: 2, large: 2, dots: 2, desc: "Hedef 100–499" },
+  zor: { name: "Zor", min: 100, max: 999, steps: 3, large: 2, dots: 3, desc: "Hedef 100–999" },
+  uzman: { name: "Uzman", min: 100, max: 999, steps: 4, large: 1, dots: 4, div: true, desc: "Bölme şart · 4+ adım" }
+};
+function calc(a, op, b, strict) {
+  switch (op) {
+    case "+": return a + b;
+    case "-": return a > b ? a - b : null;
+    case "*": return strict && (a === 1 || b === 1) ? null : a * b;
+    case "/": return b > 0 && a % b === 0 && !(strict && b === 1) ? a / b : null;
+  }
+  return null;
+}
+function pickNumbers(count, large, rng) {
+  const bigs = [25, 50, 75, 100], smalls = [];
+  for (let i = 1; i <= 10; i++) smalls.push(i, i);
+  const nL = Math.min(large, count - 2), out = [];
+  for (let i = 0; i < nL; i++) out.push(bigs.splice(Math.floor(rng() * bigs.length), 1)[0]);
+  const sm = [];
+  for (let i = 0; i < count - nL; i++) sm.push(smalls.splice(Math.floor(rng() * smalls.length), 1)[0]);
+  return sm.sort((a, b) => a - b).concat(out.sort((a, b) => a - b));
+}
+function flatten(node) { return node.src ? [...flatten(node.src.a), ...flatten(node.src.b), { a: node.src.a.v, op: node.src.op, b: node.src.b.v, r: node.v }] : []; }
+function genRound(lv, count, rng) {
+  const L = LEVELS[lv], need = Math.min(L.steps, count - 1), ops = ["+", "-", "*", "/"];
+  let fallback = null;
+  for (let attempt = 0; attempt < 6000; attempt++) {
+    const nums = pickNumbers(count, L.large, rng);
+    let pool = nums.map(v => ({ v, src: null })), fails = 0;
+    while (pool.length > 1 && fails < 40) {
+      const i = Math.floor(rng() * pool.length); let j = Math.floor(rng() * (pool.length - 1)); if (j >= i) j++;
+      let A = pool[i], B = pool[j];
+      const op = L.div && rng() < .35 ? "/" : ops[Math.floor(rng() * 4)];
+      if (A.v < B.v && (op === "-" || op === "/")) [A, B] = [B, A];
+      const r = calc(A.v, op, B.v, true);
+      if (r == null || r > 3000) { fails++; continue; }
+      const node = { v: r, src: { a: A, b: B, op } };
+      pool = pool.filter(p => p !== A && p !== B); pool.push(node);
+      if (r >= L.min && r <= L.max && !nums.includes(r)) {
+        const sol = flatten(node);
+        const ok = sol.length >= need && (!L.div || sol.some(s => s.op === "/"));
+        if (ok && rng() < .7) return { nums, target: r, solution: sol };
+        if (sol.length >= need - 1 && !fallback) fallback = { nums, target: r, solution: sol };
+      }
+    }
+  }
+  return fallback || { nums: [2, 5, 7, 10, 25, 50], target: 487, solution: [{ a: 50, op: "*", b: 10, r: 500 }, { a: 500, op: "-", b: 25, r: 475 }, { a: 7, op: "+", b: 5, r: 12 }, { a: 475, op: "+", b: 12, r: 487 }] };
+}
+// Shortest-first search from the current board, bounded so the UI never stalls.
+function solve(vals, target, limit = 600000) {
+  if (vals.includes(target)) return [];
+  let nodes = 0, found = null;
+  const path = [];
+  function dfs(arr, depth) {
+    if (++nodes > limit) return true;
+    for (let i = 0; i < arr.length; i++) for (let j = i + 1; j < arr.length; j++) {
+      const a = Math.max(arr[i], arr[j]), b = Math.min(arr[i], arr[j]);
+      for (const op of ["+", "*", "-", "/"]) {
+        const r = calc(a, op, b, true); if (r == null || r === 0) continue;
+        path.push({ a, op, b, r });
+        if (r === target) { found = path.slice(); return true; }
+        if (depth > 1) {
+          const next = arr.filter((_, k) => k !== i && k !== j); next.push(r);
+          if (dfs(next, depth - 1)) return true;
+        }
+        path.pop();
+      }
+    }
+    return false;
+  }
+  for (let d = 1; d < vals.length && !found && nodes <= limit; d++) dfs(vals, d);
+  return found;
+}
+
+/* ================= game state ================= */
+let G = null, timerId = null, confettiEl = null;
+const ctx = () => G && G.ctx;
+function startGame(cfg) {
+  S.session = { kind: "game", mode: cfg.mode, level: cfg.level, count: cfg.count, duration: S.settings.duration, round: 1, total: 10, score: 0, rounds: [], current: null };
+  newRound(S.session); saveSession(); playRound(S.session);
+}
+function newRound(c, rng = Math.random) { c.current = genRound(c.level, c.count, rng); }
+function startDaily() {
+  const key = dayKey(), seed = Number(key.replace(/-/g, ""));
+  const c = { kind: "daily", mode: "serbest", level: "orta", count: 6, duration: 0, round: 1, total: 1, score: 0, rounds: [], current: null };
+  newRound(c, mulberry32(seed)); playRound(c);
+}
+function playRound(c) {
+  const cur = c.current;
+  G = { ctx: c, tiles: cur.nums.map((v, i) => ({ id: i, v, used: false, der: false })), nextId: cur.nums.length, steps: [], sel: null, op: null, hintsUsed: 0, hint: null, elapsed: 0, last: performance.now(), paused: false, over: false, lastTick: -1 };
+  go("game"); startTimer();
+}
+function startTimer() {
+  clearInterval(timerId);
+  G.last = performance.now();
+  timerId = setInterval(tickTimer, 200);
+}
+function tickTimer() {
+  if (!G || G.over) return;
+  const now = performance.now();
+  if (!G.paused && !S.sheet) G.elapsed += (now - G.last) / 1000;
+  G.last = now;
+  const c = G.ctx;
+  if (c.mode === "sureli") {
+    const rem = c.duration - G.elapsed;
+    if (rem <= 10 && rem > 0 && Math.ceil(rem) !== G.lastTick) { G.lastTick = Math.ceil(rem); sfx.tick(); }
+    if (rem <= 0) { G.elapsed = c.duration; finishRound(true); return; }
+  }
+  paintTimer();
+}
+function paintTimer() {
+  const el = $("#tm"), arc = $("#arc"); if (!el || !G) return;
+  const c = G.ctx, C = 2 * Math.PI * 92;
+  if (c.mode === "sureli") {
+    const rem = Math.max(0, c.duration - G.elapsed), frac = rem / c.duration;
+    el.querySelector("span").textContent = fmtT(Math.ceil(rem));
+    el.className = "tm" + (rem <= 10 ? " crit" : rem <= 30 ? " warn" : "");
+    arc.style.strokeDashoffset = C * (1 - frac);
+    arc.style.stroke = rem <= 10 ? "var(--pink)" : rem <= 30 ? "var(--amber)" : "var(--lime)";
+  } else {
+    el.querySelector("span").textContent = fmtT(G.elapsed);
+  }
+}
+const liveTiles = () => G.tiles.filter(t => !t.used);
+const tileById = id => G.tiles.find(t => t.id === id);
+function toast(msg) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2400);
+}
+function pickTile(id) {
+  if (G.over || G.paused) return;
+  const t = tileById(id); if (!t || t.used) return;
+  if (G.sel === null) { G.sel = id; sfx.tap(); }
+  else if (G.sel === id) { G.sel = null; G.op = null; sfx.tap(); }
+  else if (!G.op) { G.sel = id; sfx.tap(); }
+  else { combine(G.sel, G.op, id); return; }
+  renderGame();
+}
+function pickOp(op) {
+  if (G.over || G.paused) return;
+  if (G.sel === null) { sfx.err(); toast("Önce bir sayı seç."); return; }
+  G.op = G.op === op ? null : op; sfx.op(); renderGame();
+}
+function combine(aId, op, bId) {
+  const A = tileById(aId), B = tileById(bId);
+  const r = calc(A.v, op, B.v, false);
+  if (r == null || r <= 0) {
+    sfx.err(); buzz(60);
+    toast(op === "-" ? "Sonuç pozitif olmalı. Büyük sayıyı önce seç." : "Bu bölme tam sayı vermiyor. Başka bir sayı dene.");
+    return;
+  }
+  A.used = B.used = true;
+  const id = G.nextId++;
+  G.tiles.push({ id, v: r, used: false, der: true });
+  G.steps.push({ aId, bId, id, a: A.v, op, b: B.v, r });
+  G.sel = id; G.op = null; G.hint = null;
+  sfx.combine(); buzz(15);
+  renderGame();
+  if (r === G.ctx.current.target) { G.over = true; setTimeout(() => finishRound(false), 420); }
+}
+function undo() {
+  if (G.over) return;
+  const s = G.steps.pop(); if (!s) { sfx.err(); return; }
+  G.tiles = G.tiles.filter(t => t.id !== s.id);
+  tileById(s.aId).used = false; tileById(s.bId).used = false;
+  G.sel = s.aId; G.op = s.op; G.hint = null; sfx.tap(); renderGame();
+}
+function resetBoard() {
+  if (G.over) return;
+  G.tiles = G.tiles.filter(t => !t.der); G.tiles.forEach(t => t.used = false);
+  G.steps = []; G.sel = null; G.op = null; G.hint = null; sfx.tap(); renderGame();
+}
+function useHint() {
+  if (G.over) return;
+  const left = S.settings.hints - G.hintsUsed;
+  if (left <= 0) { sfx.err(); toast("İpucu hakkın bitti."); return; }
+  const live = liveTiles().map(t => t.v), sol = solve(live, G.ctx.current.target);
+  if (!sol) { sfx.err(); G.hint = { text: "Bu sayılarla hedefe tam ulaşılamıyor. Bir adım geri alıp başka bir yol dene.", free: true }; renderGame(); return; }
+  G.hintsUsed++;
+  const s = sol[0];
+  G.hint = { text: sol.length === 1 ? `Son adım: ${s.a} ${OPSYM[s.op]} ${s.b} = ${s.r}.` : `Kalan sayılardan ${s.a} ile ${acc(s.b)} birleştirip ${s.r} elde etmeyi dene.` };
+  sfx.op(); renderGame();
+}
+function closestValue() {
+  const t = G.ctx.current.target;
+  return liveTiles().reduce((best, x) => Math.abs(x.v - t) < Math.abs(best.v - t) ? x : best).v;
+}
+function finishValue() { return G.sel !== null ? tileById(G.sel).v : closestValue(); }
+function streakInfo(hist) {
+  const days = [...new Set(hist.map(h => h.d))].sort();
+  let best = 0, run = 0, prev = null;
+  for (const d of days) { const dt = new Date(d + "T12:00"); run = prev && (dt - prev) / 864e5 < 1.5 ? run + 1 : 1; best = Math.max(best, run); prev = dt; }
+  let cur = 0; const set = new Set(days); const d = new Date();
+  if (!set.has(dayKey(d))) d.setDate(d.getDate() - 1);
+  while (set.has(dayKey(d))) { cur++; d.setDate(d.getDate() - 1); }
+  return { cur, best };
+}
+function finishRound(timeout) {
+  if (!G) return;
+  G.over = true; clearInterval(timerId);
+  const c = G.ctx, cur = c.current, target = cur.target;
+  const value = G.sel !== null && !timeout ? tileById(G.sel).v : (G.sel !== null ? tileById(G.sel).v : closestValue());
+  const diff = Math.abs(target - value), time = G.elapsed;
+  let pts = diff === 0 ? 1000 : diff <= 5 ? 500 - (diff - 1) * 75 : diff <= 10 ? 250 : diff <= 20 ? 100 : 0;
+  if (diff === 0 && c.mode === "sureli") pts += Math.round(300 * Math.max(0, c.duration - time) / c.duration);
+  pts = Math.max(0, pts - G.hintsUsed * 150);
+  const ops = { "+": 0, "-": 0, "*": 0, "/": 0 }; G.steps.forEach(s => ops[s.op]++);
+  const before = streakInfo(S.history).cur;
+  const rec = { d: dayKey(), t: Date.now(), target, value, diff, time: Math.round(time), hints: G.hintsUsed, pts, ops, steps: G.steps.length, daily: c.kind === "daily" };
+  S.history.push(rec); store.set("history", S.history);
+  const after = streakInfo(S.history).cur;
+  c.score += pts;
+  c.last = { ...rec, timeout, stepsList: G.steps.map(s => ({ a: s.a, op: s.op, b: s.b, r: s.r })), streakUp: after > before ? after : 0 };
+  c.rounds.push({ target, value, diff, pts });
+  if (c.kind === "daily") { S.daily[rec.d] = { value, diff, pts, time: rec.time }; store.set("daily", S.daily); }
+  else saveSession();
+  diff === 0 ? (sfx.win(), buzz([30, 40, 30])) : sfx.lose();
+  go("result");
+}
+function nextRound() {
+  const c = ctx() ? G.ctx : S.session;
+  if (!c || c.kind === "daily") { G = null; go("home"); return; }
+  if (c.round >= c.total) {
+    if (c.score > S.best) { S.best = c.score; store.set("best", S.best); c.newBest = true; }
+    S.summary = c; S.session = null; store.del("session"); G = null; go("summary"); return;
+  }
+  c.round++; c.last = null; newRound(c); saveSession(); playRound(c);
+}
+function retryRound() {
+  const c = G.ctx; c.score -= c.last.pts; c.rounds.pop(); c.last = null;
+  if (c.kind === "game") saveSession();
+  playRound(c);
+}
+function shareText() {
+  const c = G.ctx, l = c.last;
+  const lines = [`hedef. · Tur ${c.round} · Hedef ${l.target}`, ...l.stepsList.map((s, i) => `${i + 1}. ${s.a} ${OPSYM[s.op]} ${s.b} = ${s.r}`),
+    l.diff === 0 ? `Tam isabet · ${fmtT(l.time)} · +${fmt(l.pts)} puan` : `${l.diff} kala durdum · +${fmt(l.pts)} puan`];
+  return lines.join("\n");
+}
+async function share() {
+  const txt = shareText();
+  try { await navigator.clipboard.writeText(txt); toast("Sonuç panoya kopyalandı."); }
+  catch (e) { S.sheet = { type: "share", text: txt }; render(); }
+}
+
+/* ================= navigation ================= */
+function go(screen) {
+  if (confettiEl) { confettiEl.remove(); confettiEl = null; }
+  S.screen = screen; S.sheet = null; render(); window.scrollTo(0, 0);
+  if (screen === "result" && G && G.ctx.last && G.ctx.last.diff === 0) confetti();
+}
+function render() {
+  const app = $("#app");
+  const fn = { login: vLogin, home: vHome, setup: vSetup, game: vGame, result: vResult, summary: vSummary, settings: vSettings, stats: vStats }[S.screen];
+  app.innerHTML = fn() + (S.sheet ? vSheet() : "");
+  if (S.screen === "game") paintTimer();
+  const f = document.querySelector("[autofocus]"); if (f) f.focus();
+}
+function renderGame() { if (S.screen === "game") render(); }
+function applyTheme() {
+  const r = document.documentElement, t = S.settings.theme;
+  r.classList.toggle("t-day", t === "gunduz"); r.classList.toggle("t-sys", t === "sistem");
+}
+
+/* ================= views ================= */
+const logo = cls => `<div class="logo ${cls || ""}">hedef<i>.</i></div>`;
+function vLogin() {
+  return `<div class="login col-wrap" style="flex:1;display:flex">
+  <div class="floaters" aria-hidden="true"><div class="fl fl1">25</div><div class="fl fl2">×</div><div class="fl fl3">100</div></div>
+  <div class="col">
+    ${logo("xl")}
+    <p class="lead">Skorların ve serilerin kaybolmasın diye giriş yap.</p>
+    <div class="eyebrow" style="margin-top:14px">Giriş yöntemi</div>
+    <button class="b3 b-paper big authbtn" data-a="auth" data-v="Apple"><span class="ic">${I.apple}</span>Apple ile devam et</button>
+    <button class="b3 b-paper big authbtn" data-a="auth" data-v="Google"><span class="ic">${I.google}</span>Google ile devam et</button>
+    <button class="b3 b-lime big authbtn" data-a="auth" data-v="E-posta"><span class="ic">${I.mail}</span>E-posta ile devam et</button>
+    <div class="spacer"></div>
+    <div class="or">ya da</div>
+    <button class="b3 b-tile big" data-a="guest">Misafir olarak oyna</button>
+    <p class="legal">Devam ederek <a href="#kosullar" data-a="legal">Kullanım Koşulları</a>'nı ve <a href="#gizlilik" data-a="legal">Gizlilik Politikası</a>'nı kabul etmiş olursun.</p>
+  </div></div>`;
+}
+function vHome() {
+  const u = S.user || { name: "Misafir" }, st = streakInfo(S.history);
+  const exact = S.history.filter(h => h.diff === 0).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
+  const now = new Date(), done = S.daily[dayKey()];
+  const first = u.name.split(" ")[0];
+  return `<div class="col">
+    <div class="home-head">${logo()}<button class="avatar" data-a="go" data-v="settings" aria-label="Ayarlar">${esc(initials(u.name))}</button></div>
+    <div class="hello"><small>Merhaba ${esc(first)},</small><h1>Bugün hangi sayıyı vuruyoruz?</h1></div>
+    <div class="statrow">
+      <div class="stat"><small>Seri</small><b class="c-pink">${st.cur} gün</b></div>
+      <div class="stat"><small>En iyi</small><b>${fmt(S.best)}</b></div>
+      <div class="stat"><small>İsabet</small><b class="c-lime">%${pct}</b></div>
+    </div>
+    <button class="b3 b-lime playcard" data-a="play">
+      <div><h2>Oyna</h2><p>${S.session ? `Kaldığın yerden: Tur ${S.session.round} / ${S.session.total}` : "Yeni oyun kur ve başla"}</p></div>
+      <span class="playbtn">${I.play.replace("<svg", '<svg width="30" height="30"')}</span>
+    </button>
+    <button class="b3 b-amber dailycard" data-a="daily">
+      <div><h3>Günün bulmacası</h3><p>${done ? (done.diff === 0 ? `Bugün çözüldü · +${fmt(done.pts)} puan` : `Bugün ${done.diff} kala bitti · tekrar dene`) : "Herkes aynı sayılarla oynar"}</p></div>
+      <span class="dt">${now.getDate()} ${MONTHS[now.getMonth()]}</span>
+    </button>
+    <div class="menu">
+      ${S.session ? `<button data-a="go" data-v="setup">${I.plus}Yeni oyun<span class="chev">›</span></button>` : ""}
+      <button data-a="go" data-v="stats">${I.chart}İstatistikler<span class="chev">›</span></button>
+      <button data-a="howto">${I.help}Nasıl oynanır<span class="chev">›</span></button>
+      <button data-a="go" data-v="settings">${I.gear}Ayarlar<span class="chev">›</span></button>
+    </div>
+    <div class="spacer"></div>
+    <button class="link" style="align-self:center;padding:12px" data-a="logout">Çıkış yap</button>
+  </div>`;
+}
+function vSetup() {
+  const s = S.settings;
+  const lv = Object.entries(LEVELS).map(([k, L]) => `<button class="b3 lvl ${s.level === k ? "on b-pink" : "b-tile"}" data-a="set" data-k="level" data-v="${k}">
+      <div class="top"><h3>${L.name}</h3><span class="dots">${[1, 2, 3, 4].map(i => `<i class="${i <= L.dots ? "f" : ""}"></i>`).join("")}</span></div><p>${L.desc}</p></button>`).join("");
+  return `<div class="col">
+    <div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button></div>
+    ${logo("xl")}
+    <p class="lead">Sayıları birleştir, hedefi tuttur. Her sayı yalnızca bir kez.</p>
+    <div class="eyebrow">Mod</div>
+    <button class="b3 mode ${s.mode === "sureli" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="sureli"><span class="radio"></span><div><h3>Süreli</h3><p>Her tur ${fmtT(s.duration).replace(/^0/, "")}. Hız bonusu var.</p></div><span class="rt">${fmtT(s.duration).replace(/^0/, "")}</span></button>
+    <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt">∞</span></button>
+    <div class="eyebrow">Seviye</div>
+    <div class="grid2">${lv}</div>
+    <div class="eyebrow">Sayı adedi</div>
+    <div class="seg3">${[4, 5, 6].map(n => `<button class="b3 ${s.count === n ? "on b-pink" : "b-tile"}" data-a="set" data-k="count" data-v="${n}">${n}</button>`).join("")}</div>
+    <div class="spacer"></div>
+    <div class="bestline"><span>En iyi skor</span><b class="num">${fmt(S.best)}</b></div>
+    <button class="b3 b-paper big" data-a="start">Oyuna başla</button>
+  </div>`;
+}
+function vGame() {
+  const c = G.ctx, cur = c.current, L = LEVELS[c.level], C = 2 * Math.PI * 92;
+  const sel = G.sel !== null ? tileById(G.sel) : null;
+  const live = liveTiles(), used = G.tiles.filter(t => t.used);
+  const tiles = live.map((t, i) => `<button class="tile ${t.der ? "der" : ""} ${G.sel === t.id ? "sel" : ""}" data-a="tile" data-v="${t.id}" aria-label="${t.v}${G.sel === t.id ? ", seçili" : ""}"><span class="k">${i + 1}</span>${t.v}</button>`).join("")
+    + used.map(t => `<button class="tile used" disabled aria-label="${t.v}, kullanıldı">${t.v}</button>`).join("");
+  const diff = sel ? Math.abs(cur.target - sel.v) : null;
+  const liveBar = `<div class="live" aria-live="polite">
+      ${sel ? `<span class="lv a">${sel.v}</span>` : `<span class="lv slot">sayı seç</span>`}
+      <span class="lop ${G.op ? "" : "empty"}">${G.op ? OPSYM[G.op] : "?"}</span>
+      <span class="lv slot">sayı seç</span>
+      ${sel ? `<span class="fark">= fark <b>${diff}</b></span>` : ""}
+    </div>`;
+  const rows = G.steps.map((s, i) => `<div class="rrow"><span><i>${i + 1}.</i>${s.a} ${OPSYM[s.op]} ${s.b}</span><b>${s.r}</b></div>`).join("");
+  const pend = sel && G.op ? `<div class="rrow pend"><span><i>${G.steps.length + 1}.</i>${sel.v} ${OPSYM[G.op]} …</span><b>?</b></div>` : "";
+  const receipt = `<div class="receipt"><div class="rh"><h3>Adımlar</h3><span>TUR ${c.round}</span></div>${rows}${pend}${!rows && !pend ? `<div class="rempty">Bir sayı seç, işlemi seç, sonra ikinci sayıyı seç.</div>` : ""}</div>`;
+  const chips = G.steps.length ? `<div class="chips">${G.steps.map((s, i) => `<div class="chip"><i>${i + 1}.</i> ${s.a}${OPSYM[s.op]}${s.b} = ${s.r}</div>`).join("")}</div>` : "";
+  const hintsLeft = S.settings.hints - G.hintsUsed;
+  const hint = G.hint ? `<div class="hintbox" role="status"><div class="hh"><b>İpucu</b><span>${G.hint.free ? "ücretsiz" : "−150 puan"}</span></div>${esc(G.hint.text)}</div>` : "";
+  const fv = finishValue();
+  const timed = c.mode === "sureli";
+  const ring = `<div class="ring"><svg viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="100" cy="100" r="92" fill="var(--surface)" stroke="var(--tile)" stroke-width="10"/>
+      <circle cx="100" cy="100" r="72" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="2 5"/>
+      <circle id="arc" cx="100" cy="100" r="92" fill="none" stroke="var(--lime)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="0" style="transition:stroke-dashoffset .25s linear${timed ? "" : ";opacity:.35"}"/>
+    </svg>
+    <div class="ctr"><small>HEDEF</small><div class="tgt">${cur.target}</div><div class="tm" id="tm">${I.timer}<span>${timed ? fmtT(c.duration) : "00:00"}</span></div></div></div>`;
+  const label = c.kind === "daily" ? "Günün bulmacası" : (timed ? "Süreli" : "Serbest");
+  return `<div class="game ${G.paused ? "paused" : ""}">
+    <header class="ghead">
+      <button class="iconbtn backb" data-a="quit" aria-label="Ana sayfa">${I.back}</button>
+      ${logo()}
+      <span class="pill"><span class="dk">${label} · </span><em>${L.name}</em></span>
+      <div class="gmeta"><span>Tur <b>${c.round}</b>/${c.total}</span><span><span class="dk">Puan </span><b class="num">${fmt(c.score)}</b><span class="mb"> puan</span></span></div>
+      <div class="gtools">
+        <button class="iconbtn" data-a="pause" aria-label="Duraklat">${I.pause}</button>
+        <button class="iconbtn" data-a="sound" aria-label="Ses">${S.settings.sfx ? I.sound : I.mute}</button>
+        <button class="iconbtn" data-a="gsettings" aria-label="Ayarlar">${I.sliders}</button>
+      </div>
+      <button class="iconbtn menu-m" data-a="gmenu" aria-label="Menü">${I.menu}</button>
+    </header>
+    <main class="gmain">
+      ${ring}${liveBar}${chips}
+      <div class="tiles">${tiles}</div>
+      <div class="ops">${["+", "-", "*", "/"].map(o => `<button class="b3 b-pink op ${G.op === o ? "on" : ""}" data-a="op" data-v="${o}" aria-label="${OPSYM[o]}">${OPSYM[o]}</button>`).join("")}</div>
+    </main>
+    <aside class="gside">
+      <div class="rail-desk">${receipt}${hint}</div>
+      ${hint ? `<div class="mhint">${hint}</div>` : ""}
+      <div class="bottom rail-desk">
+        <div class="acts">
+          <button class="b3 b-tile" data-a="undo" ${G.steps.length ? "" : "disabled"}>Geri al</button>
+          <button class="b3 b-tile" data-a="reset" ${G.steps.length ? "" : "disabled"}>Sıfırla</button>
+          <button class="b3 b-tile hintb" data-a="hint" ${hintsLeft > 0 ? "" : "disabled"}>İpucu · ${hintsLeft}</button>
+        </div>
+        <button class="b3 b-lime finish" data-a="finish">${fv} ile bitir ↵</button>
+        <p class="kbd">1–${Math.min(9, live.length)} sayı · + − * / işlem · ⌫ geri al<br>R sıfırla · H ipucu · P duraklat</p>
+      </div>
+      <div class="mbar">
+        <button class="b3 b-tile ib" data-a="undo" aria-label="Geri al" ${G.steps.length ? "" : "disabled"}>${I.undo}</button>
+        <button class="b3 b-tile ib" data-a="reset" aria-label="Sıfırla" ${G.steps.length ? "" : "disabled"}>${I.reset}</button>
+        <button class="b3 b-tile ib hintb" data-a="hint" aria-label="İpucu, ${hintsLeft} hak" ${hintsLeft > 0 ? "" : "disabled"}>${I.bulb}</button>
+        <button class="b3 b-lime finish" data-a="finish">${fv} ile bitir</button>
+      </div>
+    </aside>
+    ${G.paused ? `<div class="pauseov"><div class="card"><h2 style="font-size:32px">Duraklatıldı</h2><p class="c-muted" style="margin:0">Sayılar gizlendi, süre durdu.</p><button class="b3 b-lime big" data-a="pause" autofocus>Devam et</button></div></div>` : ""}
+  </div>`;
+}
+function receiptRows(list) { return list.map((s, i) => `<div class="rrow"><span><i>${i + 1}.</i>${s.a} ${OPSYM[s.op]} ${s.b}</span><b>${s.r}</b></div>`).join(""); }
+function vResult() {
+  const c = G.ctx, l = c.last, last = c.kind === "daily" || c.round >= c.total;
+  const nextLabel = c.kind === "daily" ? "Ana sayfaya dön" : last ? "Sonuçları gör" : "Sonraki tur";
+  const d = new Date(), date = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
+  if (l.diff === 0) {
+    return `<div class="result">
+      <div class="r-left">
+        <div><div class="eyebrow lime">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.steps} adımda</div>
+        <h1>Tam<br>isabet!</h1>
+        <p class="lead">${acc(l.target)} tam tutturdun. ${l.streakUp ? `Serin ${l.streakUp} güne çıktı.` : "Sıradaki tur seni bekliyor."}</p></div>
+        <div class="statrow">
+          <div class="stat"><small>Süre</small><b>${fmtT(l.time)}</b></div>
+          <div class="stat"><small>İpucu</small><b>${l.hints}</b></div>
+          <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
+        </div>
+        <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime" data-a="next" autofocus>${nextLabel}</button></div>
+      </div>
+      <div class="r-right paperwrap"><div class="receipt"><div class="rh"><h3>Çözüm fişi</h3><span>${date}</span></div>${receiptRows(l.stepsList)}
+        <div class="tot"><span>Hedef</span><b>${l.target}</b></div></div></div>
+    </div>`;
+  }
+  const sol = solve(c.current.nums, c.current.target) || c.current.solution;
+  return `<div class="result">
+    <div class="r-left">
+      <div><div class="eyebrow amber">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.timeout ? "Süre doldu" : "En yakınla bitti"}</div>
+      <h1>${l.diff} kala<br>durdun.</h1></div>
+      <div class="cmp"><div><small>Senin sonucun</small><div class="bx a">${l.value}</div></div><div class="arr">→</div><div><small>Hedef</small><div class="bx t">${l.target}</div></div></div>
+      <div class="statrow">
+        <div class="stat"><small>Fark</small><b class="c-amber">${l.diff}</b></div>
+        <div class="stat"><small>Süre</small><b>${fmtT(l.time)}</b></div>
+        <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
+      </div>
+      <div class="rbtns stack"><button class="b3 b-lime" data-a="next" autofocus>${nextLabel}</button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
+    </div>
+    <div class="r-right"><div class="receipt"><div class="rh"><h3>Mümkün olan çözüm</h3><span>${sol.length} ADIM</span></div>${receiptRows(sol)}</div></div>
+  </div>`;
+}
+function vSummary() {
+  const c = S.summary, exact = c.rounds.filter(r => r.diff === 0).length;
+  return `<div class="col">
+    <div class="eyebrow" style="color:var(--lime-ink)">${LEVELS[c.level].name} · ${c.mode === "sureli" ? "Süreli" : "Serbest"} · 10 tur</div>
+    <h1 style="font-size:clamp(56px,16vw,88px);line-height:.9;letter-spacing:-.05em">Oyun<br>bitti.</h1>
+    <p class="lead">${c.newBest ? "Yeni rekor! " : ""}${exact} turda hedefi tam tutturdun.</p>
+    <div class="statrow">
+      <div class="stat"><small>Toplam</small><b class="c-lime">${fmt(c.score)}</b></div>
+      <div class="stat"><small>Tam isabet</small><b>${exact}/10</b></div>
+      <div class="stat"><small>En iyi</small><b>${fmt(S.best)}</b></div>
+    </div>
+    <div class="sumlist">${c.rounds.map((r, i) => `<div><i>${i + 1}.</i><span>${r.value} → ${r.target}</span><span class="${r.diff ? "c-amber" : "c-lime"}">${r.diff ? r.diff + " fark" : "tam"}</span><span class="p">+${fmt(r.pts)}</span></div>`).join("")}</div>
+    <div class="spacer"></div>
+    <button class="b3 b-lime big" data-a="go" data-v="setup">Yeni oyun</button>
+    <button class="b3 b-tile big" data-a="go" data-v="home">Ana sayfa</button>
+  </div>`;
+}
+function seg(key, opts, mono) {
+  return `<div class="seg" role="group">${opts.map(([v, l]) => `<button class="${mono ? "mono " : ""}${S.settings[key] == v ? "on" : ""}" data-a="sset" data-k="${key}" data-v="${v}">${l}</button>`).join("")}</div>`;
+}
+function vSettings() {
+  const s = S.settings, u = S.user || { name: "Misafir", email: "" };
+  const tog = k => `<button class="tog ${s[k] ? "on" : ""}" data-a="toggle" data-k="${k}" role="switch" aria-checked="${s[k]}"></button>`;
+  return `<div class="col">
+    <div class="toprow"><button class="iconbtn" data-a="sback" aria-label="Geri">${I.back}</button><h1>Ayarlar</h1></div>
+    <div class="sec"><div class="eyebrow">Oyun</div><div class="sbox">
+      <div class="srow"><span class="lb">Varsayılan mod</span>${seg("mode", [["sureli", "Süreli"], ["serbest", "Serbest"]])}</div>
+      <div class="srow"><span class="lb">Tur süresi</span>${seg("duration", [[60, "1:00"], [120, "2:00"], [180, "3:00"]], true)}</div>
+      <div class="srow"><span class="lb">Sayı adedi</span>${seg("count", [[4, "4"], [5, "5"], [6, "6"]], true)}</div>
+      <div class="srow"><span class="lb">İpucu hakkı<small>Her ipucu −150 puan</small></span><div class="stepper"><button data-a="hints" data-v="-1" aria-label="Azalt">−</button><b>${s.hints}</b><button data-a="hints" data-v="1" aria-label="Artır">+</button></div></div>
+    </div></div>
+    <div class="sec"><div class="eyebrow">Görünüm ve ses</div><div class="sbox">
+      <div class="srow"><span class="lb">Tema</span>${seg("theme", [["gece", "Gece"], ["gunduz", "Gündüz"], ["sistem", "Sistem"]])}</div>
+      <div class="srow"><span class="lb">Ses efektleri</span>${tog("sfx")}</div>
+      <div class="srow"><span class="lb">Müzik</span>${tog("music")}</div>
+      <div class="srow"><span class="lb">Titreşim</span>${tog("vibe")}</div>
+    </div></div>
+    <div class="sec"><div class="eyebrow">Hesap</div><div class="sbox">
+      <button class="acct" data-a="editname"><span class="avatar sm">${esc(initials(u.name))}</span><span style="min-width:0"><b>${esc(u.name)}</b><small>${esc(u.email || (u.via ? u.via + " hesabı" : "Misafir hesabı"))}</small></span><span class="c-muted" style="margin-left:auto;font-family:var(--mono)">›</span></button>
+      <button class="danger" data-a="confirmreset">İlerlemeyi sıfırla</button>
+    </div></div>
+    <p class="ver">hedef. · sürüm 1.0</p>
+  </div>`;
+}
+function vStats() {
+  const p = S.period, now = new Date(), day = 864e5;
+  const startOf = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x.getTime(); };
+  const today = startOf(now);
+  const span = p === "hafta" ? 7 : p === "ay" ? 30 : Infinity;
+  const from = span === Infinity ? 0 : today - (span - 1) * day;
+  const H = S.history.filter(h => h.t >= from);
+  const prev = span === Infinity ? null : S.history.filter(h => h.t >= from - span * day && h.t < from);
+  const tabs = `<div class="seg" role="tablist">${[["hafta", "Hafta"], ["ay", "Ay"], ["tumu", "Tümü"]].map(([k, l]) => `<button class="${p === k ? "on" : ""}" data-a="period" data-v="${k}">${l}</button>`).join("")}</div>`;
+  const head = `<div class="toprow"><button class="iconbtn" data-a="go" data-v="home" aria-label="Geri">${I.back}</button><h1>Rapor</h1><span class="spacer"></span>${tabs}</div>`;
+  if (!H.length) return `<div class="col">${head}<div class="panel empty"><h3 style="color:var(--ink);margin-bottom:8px">Bu dönemde tur yok</h3>Bir oyun oyna; puanların, hızın ve en çok kullandığın işlemler burada görünecek.<br><br><button class="b3 b-lime big" data-a="play">Oyna</button></div></div>`;
+  const total = H.reduce((a, h) => a + h.pts, 0), exact = H.filter(h => h.diff === 0);
+  let change = "";
+  if (prev && prev.length) { const pt = prev.reduce((a, h) => a + h.pts, 0); const ch = pt ? Math.round((total - pt) / pt * 100) : 0; change = `${ch >= 0 ? "▲" : "▼"} %${Math.abs(ch)} önceki ${p === "hafta" ? "haftaya" : "aya"} göre`; }
+  else change = p === "tumu" ? `${S.history.length} turun toplamı` : "önceki dönemde tur yok";
+  const avg = exact.length ? exact.reduce((a, h) => a + h.time, 0) / exact.length : null;
+  const fast = exact.length ? Math.min(...exact.map(h => h.time)) : null;
+  const st = streakInfo(S.history);
+  // bars
+  let buckets = [], label;
+  if (p === "hafta") {
+    for (let i = 6; i >= 0; i--) { const s = today - i * day, d = new Date(s); buckets.push({ s, e: s + day, l: DAYS[d.getDay()] }); }
+  } else if (p === "ay") {
+    for (let i = 29; i >= 0; i--) { const s = today - i * day, d = new Date(s); buckets.push({ s, e: s + day, l: i % 5 === 0 ? String(d.getDate()) : "" }); }
+  } else {
+    for (let i = 11; i >= 0; i--) { const s = today - (i * 7 + 6) * day, d = new Date(s); buckets.push({ s, e: s + 7 * day, l: i % 3 === 0 ? d.getDate() + " " + MONTHS[d.getMonth()].toLowerCase() : "" }); }
+  }
+  buckets.forEach(b => b.v = S.history.filter(h => h.t >= b.s && h.t < b.e).reduce((a, h) => a + h.pts, 0));
+  const fd = new Date(buckets[0].s), ld = new Date(buckets[buckets.length - 1].e - 1);
+  label = `${fd.getDate()}${fd.getMonth() !== ld.getMonth() ? " " + MONTHS[fd.getMonth()] : ""}–${ld.getDate()} ${MONTHS[ld.getMonth()]}`;
+  const max = Math.max(1, ...buckets.map(b => b.v)), dense = buckets.length > 7;
+  const kfmt = v => v >= 1000 ? (v / 1000).toFixed(1).replace(".", ",") + "k" : String(v);
+  const bars = `<div class="bars" style="gap:${dense ? 3 : 8}px">${buckets.map((b, i) => `<div class="bc ${i === buckets.length - 1 ? "last" : ""}">${!dense || i === buckets.length - 1 ? `<span class="bv">${b.v ? kfmt(b.v) : ""}</span>` : ""}<div class="bar" style="height:${b.v / max * 82}%" title="${fmt(b.v)} puan"></div></div>`).join("")}</div>
+    <div class="blabels" style="gap:${dense ? 3 : 8}px">${buckets.map(b => `<span style="overflow:visible;white-space:nowrap">${b.l}</span>`).join("")}</div>`;
+  const n = H.length, grp = [["Tam isabet", H.filter(h => h.diff === 0).length, "var(--lime)"], ["1–5 fark", H.filter(h => h.diff >= 1 && h.diff <= 5).length, "var(--amber)"], ["6–10 fark", H.filter(h => h.diff >= 6 && h.diff <= 10).length, "var(--pink)"], ["10+ fark", H.filter(h => h.diff > 10).length, "var(--faint)"]];
+  const pc = v => Math.round(v / n * 100);
+  const opsT = { "+": 0, "-": 0, "*": 0, "/": 0 }; H.forEach(h => Object.keys(opsT).forEach(k => opsT[k] += h.ops[k] || 0));
+  const opsSum = Object.values(opsT).reduce((a, b) => a + b, 0) || 1;
+  const order = Object.keys(opsT).sort((a, b) => opsT[b] - opsT[a]);
+  const hints = H.reduce((a, h) => a + h.hints, 0);
+  return `<div class="col">${head}
+    <div class="stgrid">
+      <div class="sc hero"><small>Toplam puan</small><b>${fmt(total)}</b><span>${change}</span></div>
+      <div class="sc"><small>Oynanan tur</small><b>${n}</b><span>${exact.length} tam isabet</span></div>
+      <div class="sc"><small>Ort. çözüm süresi</small><b>${avg == null ? "—" : fmtT(avg)}</b><span>${fast == null ? "henüz tam isabet yok" : "en hızlı " + fmtT(fast)}</span></div>
+      <div class="sc"><small>Seri</small><b class="c-pink">${st.cur} gün</b><span>rekor ${st.best} gün</span></div>
+    </div>
+    <div class="panel"><div class="ph"><h3>${p === "tumu" ? "Haftalık puan" : "Günlük puan"}</h3><span>${label}</span></div>${bars}</div>
+    <div class="panel"><div class="ph"><h3>Hedefe ne kadar yaklaştın</h3></div>
+      <div class="stack">${grp.filter(g => g[1]).map(g => `<i style="flex:${g[1]};background:${g[2]}"></i>`).join("")}</div>
+      <div class="legend">${grp.map(g => `<div><span class="sw" style="background:${g[2]}"></span>${g[0]}<b>%${pc(g[1])}</b></div>`).join("")}</div></div>
+    <div class="panel"><div class="ph"><h3>En çok kullandığın işlem</h3><span>ipucu: ${hints} kez</span></div>
+      <div class="opsuse">${order.map((k, i) => `<div><div class="oc ${i === 0 && opsT[k] ? "top" : ""}">${OPSYM[k]}</div><b>%${Math.round(opsT[k] / opsSum * 100)}</b></div>`).join("")}</div></div>
+  </div>`;
+}
+function vSheet() {
+  const sh = S.sheet;
+  let body = "";
+  if (sh.type === "howto") body = `<h2>Nasıl oynanır</h2>
+    <ol><li><b>Bir sayı seç</b>, sonra bir <b>işlem</b> seç (+ − × ÷).</li><li><b>İkinci sayıyı seç</b>; sonuç yeni bir kart olur ve tekrar kullanılabilir.</li><li>Her sayıyı <b>yalnızca bir kez</b> kullanabilirsin. Sonuçlar pozitif tam sayı olmalı.</li><li>Hedefi tam tutturursan tur biter. Tutturamazsan en yakın sayıyla <b>bitir</b>.</li></ol>
+    <p>Tam isabet 1.000 puan. Süreli modda kalan süreye göre 300 puana kadar hız bonusu var. Hedefe 1–5 yaklaşmak 500–200 puan getirir. Her ipucu 150 puan düşürür.</p>
+    <button class="b3 b-lime one" data-a="close" autofocus>Anladım</button>`;
+  else if (sh.type === "auth") body = `<h2>${esc(sh.via)} ile devam et</h2>
+    <p>Bu sürümde hesaplar yalnızca bu cihazda tutulur. Adını yaz, skorların bu isimle kaydedilsin.</p>
+    <form id="authform" style="display:contents">
+      <div class="field"><label for="nm">Adın</label><input id="nm" name="nm" autocomplete="name" required value="${esc(S.user ? S.user.name : "")}" autofocus></div>
+      ${sh.via === "E-posta" || sh.edit ? `<div class="field"><label for="em">E-posta</label><input id="em" name="em" type="email" autocomplete="email" value="${esc(S.user && S.user.email || "")}" ${sh.via === "E-posta" ? "required" : ""}></div>` : ""}
+      <div class="row"><button type="button" class="b3 b-tile" data-a="close">Vazgeç</button><button type="submit" class="b3 b-lime">${sh.edit ? "Kaydet" : "Devam et"}</button></div>
+    </form>`;
+  else if (sh.type === "reset") body = `<h2>İlerlemeyi sıfırla</h2><p>Tüm turların, serin, en iyi skorun ve yarım kalan oyunun silinir. Bu geri alınamaz.</p>
+    <div class="row"><button class="b3 b-tile" data-a="close" autofocus>Vazgeç</button><button class="b3 b-pink" data-a="doreset">Sıfırla</button></div>`;
+  else if (sh.type === "quit") body = `<h2>Turdan çık</h2><p>${G.ctx.kind === "game" ? "Oyunun kaydedildi. Ana sayfadan Tur " + G.ctx.round + "'ten devam edebilirsin; bu tur baştan başlar." : "Günün bulmacasını istediğin zaman yeniden açabilirsin."}</p>
+    <div class="row"><button class="b3 b-tile" data-a="close" autofocus>Oyuna dön</button><button class="b3 b-pink" data-a="doquit">Çık</button></div>`;
+  else if (sh.type === "gmenu") body = `<h2>Menü</h2>
+    <button class="mi" data-a="pause">${I.pause}Duraklat</button>
+    <button class="mi" data-a="sound">${S.settings.sfx ? I.mute : I.sound}Sesi ${S.settings.sfx ? "kapat" : "aç"}</button>
+    <button class="mi" data-a="howto">${I.help}Nasıl oynanır</button>
+    <button class="mi" data-a="gsettings">${I.gear}Ayarlar</button>
+    <button class="mi" data-a="quit">${I.exit}Turdan çık</button>
+    <button class="b3 b-lime one" data-a="close">Oyuna dön</button>`;
+  else if (sh.type === "share") body = `<h2>Sonucu paylaş</h2><p>Metni seçip kopyala.</p><textarea id="sharetxt" readonly style="width:100%;min-height:160px;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;font-family:var(--mono);font-size:15px">${esc(sh.text)}</textarea><button class="b3 b-lime one" data-a="close">Tamam</button>`;
+  else if (sh.type === "legal") body = `<h2>Koşullar ve gizlilik</h2><p>hedef. skorlarını ve ayarlarını yalnızca bu cihazdaki tarayıcı depolamasında tutar. Hiçbir veri bir sunucuya gönderilmez.</p><button class="b3 b-lime one" data-a="close" autofocus>Tamam</button>`;
+  return `<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">${body}</div></div>`;
+}
+
+/* ================= confetti ================= */
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = document.createElement("canvas"); c.className = "confetti"; document.body.appendChild(c); confettiEl = c;
+  const x = c.getContext("2d"), dpr = devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; x.scale(dpr, dpr);
+  const cols = ["#c8ff4d", "#ff5d8b", "#ffc24d", "#8e7cff", "#f4f1ff"];
+  const P = Array.from({ length: 150 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .7, vx: (Math.random() - .5) * 1.6, vy: 1.6 + Math.random() * 2.6, r: Math.random() * 6.3, vr: (Math.random() - .5) * .16, w: 8 + Math.random() * 12, h: 6 + Math.random() * 5, c: cols[Math.random() * 5 | 0], dot: Math.random() < .35 }));
+  const t0 = performance.now();
+  (function f(t) {
+    if (confettiEl !== c) return;
+    x.clearRect(0, 0, W, H);
+    for (const p of P) { p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; if (p.dot) { x.beginPath(); x.arc(0, 0, p.h / 2, 0, 7); x.fill(); } else { x.beginPath(); x.roundRect ? x.roundRect(-p.w / 2, -p.h / 2, p.w, p.h, 2) : x.rect(-p.w / 2, -p.h / 2, p.w, p.h); x.fill(); } x.restore(); }
+    if (t - t0 < 5000) requestAnimationFrame(f); else { c.remove(); if (confettiEl === c) confettiEl = null; }
+  })(t0);
+}
+
+/* ================= actions ================= */
+const A = {
+  auth: v => { S.sheet = { type: "auth", via: v }; render(); },
+  guest: () => { S.user = { name: "Misafir", via: null }; store.set("user", S.user); go("home"); },
+  legal: () => { S.sheet = { type: "legal" }; render(); },
+  logout: () => { S.user = null; store.del("user"); go("login"); },
+  go: v => { if (v === "settings") S.back = S.screen; go(v); },
+  howto: () => { S.sheet = { type: "howto" }; render(); },
+  close: () => { S.sheet = null; render(); },
+  scrim: (v, el, e) => { if (e.target === el) A.close(); },
+  play: () => { if (S.session) playRound(S.session); else go("setup"); },
+  daily: () => startDaily(),
+  set: (v, el) => { const k = el.dataset.k; S.settings[k] = k === "count" ? Number(v) : v; saveSettings(); render(); },
+  start: () => { ac(); startGame({ mode: S.settings.mode, level: S.settings.level, count: S.settings.count }); },
+  tile: v => pickTile(Number(v)),
+  op: v => pickOp(v),
+  undo: () => undo(), reset: () => resetBoard(), hint: () => useHint(),
+  finish: () => { if (!G.over) { G.over = true; finishRound(false); } },
+  pause: () => { if (!G || G.over) return; G.paused = !G.paused; S.sheet = null; render(); },
+  sound: () => { S.settings.sfx = !S.settings.sfx; saveSettings(); if (S.sheet) S.sheet = null; render(); },
+  gsettings: () => { if (G) G.paused = true; S.back = "game"; go("settings"); },
+  gmenu: () => { S.sheet = { type: "gmenu" }; render(); },
+  quit: () => { S.sheet = { type: "quit" }; render(); },
+  doquit: () => { clearInterval(timerId); G = null; go("home"); },
+  next: () => nextRound(), retry: () => retryRound(), share: () => share(),
+  sback: () => { const b = S.back || "home"; S.back = null; if (b === "game" && G) { go("game"); startTimer(); } else go(b === "settings" ? "home" : b); },
+  sset: (v, el) => { const k = el.dataset.k; S.settings[k] = ["duration", "count"].includes(k) ? Number(v) : v; saveSettings(); if (k === "theme") applyTheme(); render(); },
+  hints: v => { S.settings.hints = Math.max(0, Math.min(5, S.settings.hints + Number(v))); saveSettings(); render(); },
+  toggle: (v, el) => { const k = el.dataset.k; S.settings[k] = !S.settings[k]; saveSettings(); if (k === "music") { ac(); syncMusic(); } if (k === "vibe" && S.settings.vibe) buzz(30); if (k === "sfx" && S.settings.sfx) sfx.tap(); render(); },
+  editname: () => { S.sheet = { type: "auth", via: S.user && S.user.via || "Misafir", edit: true }; render(); },
+  confirmreset: () => { S.sheet = { type: "reset" }; render(); },
+  doreset: () => { S.history = []; S.best = 0; S.session = null; S.daily = {}; ["history", "best", "session", "daily"].forEach(k => store.del(k)); G = null; S.back = null; toast("İlerleme sıfırlandı."); go("home"); },
+  period: v => { S.period = v; render(); }
+};
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-a]"); if (!el) return;
+  if (el.tagName === "A") e.preventDefault();
+  if (el.disabled) return;
+  ac();
+  const fn = A[el.dataset.a]; if (fn) fn(el.dataset.v, el, e);
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "authform") return;
+  e.preventDefault();
+  const name = $("#nm").value.trim() || "Oyuncu", em = $("#em");
+  const via = S.sheet.via;
+  S.user = { name, email: em ? em.value.trim() : (S.user && S.user.email) || "", via: via === "Misafir" ? null : via };
+  store.set("user", S.user);
+  if (S.sheet.edit) { S.sheet = null; render(); } else go("home");
+});
+document.addEventListener("keydown", e => {
+  if (S.sheet && e.key === "Escape") { A.close(); return; }
+  if (S.screen === "result" && e.key === "Enter" && !S.sheet && !e.target.closest("button")) { nextRound(); return; }
+  if (S.screen !== "game" || !G || S.sheet || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (k === "p" || k === "P" || (k === "Escape" && G.paused)) { A.pause(); return; }
+  if (G.paused || G.over) return;
+  if (/^[1-9]$/.test(k)) { const t = liveTiles()[Number(k) - 1]; if (t) pickTile(t.id); }
+  else if (k === "+") pickOp("+");
+  else if (k === "-") pickOp("-");
+  else if (k === "*" || k === "x" || k === "X") pickOp("*");
+  else if (k === "/") { e.preventDefault(); pickOp("/"); }
+  else if (k === "Backspace") { e.preventDefault(); undo(); }
+  else if (k === "r" || k === "R") resetBoard();
+  else if (k === "h" || k === "H") useHint();
+  else if (k === "Enter") { e.preventDefault(); A.finish(); }
+  else if (k === "Escape") { G.sel = null; G.op = null; renderGame(); }
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden && G && !G.over && S.screen === "game" && !G.paused) { G.paused = true; render(); } });
+
+/* ================= boot ================= */
+applyTheme(); syncMusic();
+S.screen = S.user ? "home" : "login";
+render();
+</script>
+</body>
+</html>
