@@ -109,30 +109,32 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .home-head{display:flex;justify-content:space-between;align-items:center}
 .avatar{width:58px;height:58px;border-radius:50%;border:3px solid var(--lime);background:var(--tile);display:grid;place-items:center;font-weight:800;font-size:18px}
 .avatar.sm{width:52px;height:52px;font-size:16px}
-.hello small{color:var(--muted);font-size:19px}
-.hello h1{font-size:clamp(34px,10vw,46px);line-height:1.02;margin-top:6px}
-.playcard{display:flex;align-items:center;justify-content:space-between;padding:26px 24px 26px 28px;text-align:left;border-radius:28px;gap:12px}
-.playcard h2{font-size:34px;font-weight:800}
-.playcard p{margin:4px 0 0;font-weight:500;font-size:17px}
+.home-head .avatar{width:44px;height:44px;font-size:14px;border-width:2.5px}
+.hello small{color:var(--muted);font-size:16px}
+.hello h1{font-size:clamp(28px,8vw,36px);line-height:1.05;margin-top:4px}
+.home .statrow{gap:10px}
+.home .stat{padding:12px 14px;border-radius:16px}
+.home .stat small{font-size:13px;margin-bottom:2px}
+.home .stat b{font-size:clamp(18px,5.4vw,22px)}
+.playcard{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 18px 22px;text-align:left;border-radius:22px;gap:12px;--sh:var(--lime-shade);box-shadow:0 4px 0 var(--sh)}
+.playcard h2{font-size:26px;font-weight:800}
+.playcard p{margin:2px 0 0;font-weight:500;font-size:14px}
 .playbtn{width:74px;height:74px;border-radius:50%;background:var(--on-accent);color:var(--lime);display:grid;place-items:center;flex:none}
-.dailycard{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;text-align:left;border-radius:28px;gap:12px}
-.dailycard h3{font-size:24px;font-weight:800;letter-spacing:-.02em}
-.dailycard p{margin:4px 0 0;font-weight:500}
-.dailycard .dt{font-family:var(--mono);font-weight:800;font-size:20px;white-space:nowrap}
-.menu{background:var(--surface);border-radius:26px;overflow:hidden}
-.menu button{display:flex;align-items:center;gap:18px;width:100%;padding:24px 28px;font-weight:700;font-size:20px;text-align:left}
+.playcard .playbtn{width:48px;height:48px}
+.playcard .playbtn svg{width:20px;height:20px}
+.dailycard{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;text-align:left;border-radius:22px;gap:12px;box-shadow:0 4px 0 var(--amber-shade)}
+.dailycard h3{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.dailycard p{margin:2px 0 0;font-weight:500;font-size:14px}
+.dailycard .dt{font-family:var(--mono);font-weight:800;font-size:15px;white-space:nowrap}
+.menu{background:var(--surface);border-radius:20px;overflow:hidden}
+.menu button{display:flex;align-items:center;gap:14px;width:100%;padding:16px 20px;font-weight:600;font-size:16px;text-align:left}
 .menu button + button{border-top:1px solid var(--line)}
 .menu button:hover{background:color-mix(in srgb,var(--tile) 50%,transparent)}
-.menu svg{width:26px;height:26px;color:var(--muted);flex:none}
+.menu svg{width:20px;height:20px;color:var(--muted);flex:none}
 .menu .chev{margin-left:auto;color:var(--faint);font-family:var(--mono)}
+.home.col{gap:14px}
 
 @media (max-width:380px){
-  .playcard,.dailycard{padding:20px 20px 20px 22px}
-  .playcard h2{font-size:30px}
-  .playcard p,.dailycard p{font-size:15px}
-  .playbtn{width:60px;height:60px}
-  .dailycard h3{font-size:21px}
-  .dailycard .dt{font-size:17px}
   .lvl{padding:16px}
   .lvl p{font-size:13px}
 }
@@ -515,11 +517,16 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .scrim.pop{display:block;background:transparent}
   .scrim.pop .sheet{position:absolute;top:92px;right:max(16px,calc((100vw - 1200px) / 2 + 40px));width:360px;box-shadow:0 20px 60px rgba(0,0,0,.45);border:1px solid var(--line);padding:22px 22px 10px;gap:12px}
 }
-.resume{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 14px 22px;border-radius:20px;text-align:left;width:100%}
-.resume .rs-txt{min-width:0}
-.resume b{display:block;font-size:17px}
-.resume small{color:var(--muted);font-size:14px}
-.resume .rs-go{width:44px;height:44px;border-radius:50%;background:var(--lime);color:var(--on-accent);display:grid;place-items:center;flex:none}
+.resume{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:18px;text-align:left;width:100%;box-shadow:0 3px 0 var(--tile-shade)}
+.resume .rs-txt{min-width:0;flex:1}
+.resume b{display:block;font-size:15px;font-weight:700}
+.resume small{color:var(--muted);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resume .rs-ic{width:36px;height:36px;border-radius:10px;background:color-mix(in srgb,var(--lime) 16%,transparent);color:var(--lime-ink);display:grid;place-items:center;flex:none}
+.resume .rs-ic svg{width:20px;height:20px}
+.resume .rs-chev{color:var(--faint);font-family:var(--mono);font-size:20px;flex:none}
+.dhome .resume{padding:16px 20px}
+.dhome .resume b{font-size:17px}
+.dhome .resume small{font-size:14px}
 .dhome .resume{margin-top:22px}
 .rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
@@ -531,7 +538,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.4";
+const APP_VERSION = "2.5";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -589,6 +596,7 @@ const I = {
   chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 15l4-4 3 3 5-6"/></svg>',
   help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  history: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4.5v4.5H8"/><path d="M12 7.5V12l3 2"/></svg>',
   pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   exit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 17l5-5-5-5M15 12H3"/></svg>',
@@ -934,7 +942,7 @@ function vHome() {
   const exact = S.history.filter(h => h.diff === 0).length, pct = S.history.length ? Math.round(exact / S.history.length * 100) : 0;
   const now = new Date(), done = S.daily[dayKey()];
   const first = u.name.split(" ")[0];
-  return `<div class="col">
+  return `<div class="col home">
     <div class="home-head">${logo()}<button class="avatar" data-a="profile" aria-label="Profil">${esc(initials(u.name))}</button></div>
     <div class="hello"><small>Merhaba ${esc(first)},</small><h1>Bugün hangi sayıyı vuruyoruz?</h1></div>
     <div class="statrow">
@@ -944,7 +952,7 @@ function vHome() {
     </div>
     <button class="b3 b-lime playcard" data-a="play">
       <div><h2>Oyna</h2><p>Mod ve seviyeni seç, başla</p></div>
-      <span class="playbtn">${I.play.replace("<svg", '<svg width="30" height="30"')}</span>
+      <span class="playbtn">${I.play}</span>
     </button>
     ${resumeBar()}
     <button class="b3 b-amber dailycard" data-a="daily">
@@ -1265,8 +1273,9 @@ function vSheet() {
 function resumeBar() {
   const se = S.session; if (!se) return "";
   return `<button class="b3 b-tile resume" data-a="resume">
+      <span class="rs-ic">${I.history}</span>
       <span class="rs-txt"><b>Kaldığın yerden devam et</b><small>${se.mode === "sureli" ? "Süreli" : "Serbest"} · ${LEVELS[se.level].name} · Tur ${se.round}/${se.total} · ${fmt(se.score)} puan</small></span>
-      <span class="rs-go">${I.play.replace("<svg", '<svg width="18" height="18"')}</span></button>`;
+      <span class="rs-chev">›</span></button>`;
 }
 const resumeNote = () => S.session ? `<p class="rnote2">Yeni oyun başlatınca yarım kalan oyunun (Tur ${S.session.round}/${S.session.total}) silinir.</p>` : "";
 /* ================= desktop views ================= */
