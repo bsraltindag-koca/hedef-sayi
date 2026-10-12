@@ -536,12 +536,19 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .dhome .resume small{font-size:14px}
 .dhome .resume{margin-top:22px}
 .rnote2{margin:0;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}
-.cntrow{display:flex;align-items:center;gap:16px}
-.stepper button:disabled{opacity:.35;cursor:not-allowed}
-.stepper.stp-lg{gap:18px}
-.stepper.stp-lg button{width:56px;height:56px;font-size:26px;background:var(--tile);box-shadow:0 4px 0 var(--tile-shade)}
-.stepper.stp-lg b{font-size:34px;min-width:44px}
-.cnthint{color:var(--muted);font-size:14px}
+.cslider{display:flex;flex-direction:column;gap:10px;width:100%}
+.cs-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.cs-top .cs-val{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.cs-ends{display:flex;justify-content:space-between;color:var(--muted);font-family:var(--mono);font-size:12px;padding:0 4px}
+.cnt-range{-webkit-appearance:none;appearance:none;width:100%;height:32px;background:transparent;margin:0;cursor:pointer;touch-action:pan-y}
+.cnt-range:focus-visible{outline:3px solid var(--lime);outline-offset:4px;border-radius:12px}
+.cnt-range::-webkit-slider-runnable-track{height:10px;border-radius:6px;background:linear-gradient(to right,var(--lime) 0 var(--p),var(--tile) var(--p) 100%)}
+.cnt-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:var(--pink);border:4px solid var(--ink);margin-top:-10px;box-shadow:0 3px 0 var(--pink-shade)}
+.cnt-range::-moz-range-track{height:10px;border-radius:6px;background:var(--tile)}
+.cnt-range::-moz-range-progress{height:10px;border-radius:6px;background:var(--lime)}
+.cnt-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--pink);border:4px solid var(--ink);box-shadow:0 3px 0 var(--pink-shade)}
+.srow.srow-slider{display:block;padding:16px 0 12px}
+.srow-slider .cs-top .cs-val{font-size:24px}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
 .pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
 
@@ -595,7 +602,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "2.9";
+const APP_VERSION = "3.0";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -1055,8 +1062,7 @@ function vSetup() {
     <button class="b3 mode ${s.mode === "serbest" ? "on b-lime" : "off b-tile"}" data-a="set" data-k="mode" data-v="serbest"><span class="radio"></span><div><h3>Serbest</h3><p>Süre yok. Acele etmeden düşün.</p></div><span class="rt inf" aria-label="süresiz">∞</span></button>
     <div class="eyebrow">Seviye</div>
     <div class="grid2">${lv}</div>
-    <div class="eyebrow">Sayı adedi</div>
-    <div class="cntrow">${countStepper()}</div>
+    ${countSlider()}
     <div class="spacer"></div>
     <div class="bestline"><span>En iyi skor</span><b class="num">${fmt(S.best)}</b></div>
     ${resumeNote()}
@@ -1230,7 +1236,7 @@ function vSettings() {
     <div class="sec"><div class="eyebrow">Oyun</div><div class="sbox">
       <div class="srow"><span class="lb">Varsayılan mod</span>${seg("mode", [["sureli", "Süreli"], ["serbest", "Serbest"]])}</div>
       <div class="srow"><span class="lb">Tur süresi</span>${seg("duration", [[60, "1:00"], [120, "2:00"], [180, "3:00"]], true)}</div>
-      <div class="srow"><span class="lb">Sayı adedi<small>3 ile 12 arası</small></span>${countStepper(true)}</div>
+      <div class="srow srow-slider">${countSlider(true)}</div>
       <div class="srow"><span class="lb">İpucu hakkı<small>Her ipucu −150 puan</small></span><div class="stepper"><button data-a="hints" data-v="-1" aria-label="Azalt">−</button><b>${s.hints}</b><button data-a="hints" data-v="1" aria-label="Artır">+</button></div></div>
     </div></div>
     <div class="sec"><div class="eyebrow">Görünüm ve ses</div><div class="sbox">
@@ -1344,9 +1350,14 @@ function vSheet() {
 }
 
 const COUNT_MIN = 3, COUNT_MAX = 12;
-function countStepper(small) {
-  const n = S.settings.count;
-  return `<div class="stepper ${small ? "" : "stp-lg"}"><button data-a="cnt" data-v="-1" aria-label="Azalt" ${n <= COUNT_MIN ? "disabled" : ""}>−</button><b>${n}</b><button data-a="cnt" data-v="1" aria-label="Artır" ${n >= COUNT_MAX ? "disabled" : ""}>+</button></div>${small ? "" : `<span class="cnthint">3 ile 12 arası sayı</span>`}`;
+function countSlider(inRow) {
+  const n = S.settings.count, pct = (n - COUNT_MIN) / (COUNT_MAX - COUNT_MIN) * 100;
+  const head = inRow ? `<span class="lb">Sayı adedi</span>` : `<span class="eyebrow">Sayı adedi</span>`;
+  return `<div class="cslider">
+      <div class="cs-top">${head}<b class="cs-val">${n}</b></div>
+      <input type="range" class="cnt-range" id="cnt-range-${inRow ? "s" : "g"}" min="${COUNT_MIN}" max="${COUNT_MAX}" step="1" value="${n}" style="--p:${pct}%" aria-label="Sayı adedi">
+      <div class="cs-ends"><span>${COUNT_MIN}</span><span>${COUNT_MAX}</span></div>
+    </div>`;
 }
 function resumeBar() {
   const se = S.session; if (!se) return "";
@@ -1440,14 +1451,13 @@ function dSetup() {
         </div>
         <div class="eyebrow" style="margin-top:10px">Seviye</div>
         <div class="dlvls">${lv}</div>
-        <div class="eyebrow" style="margin-top:10px">Sayı adedi</div>
-        <div class="cntrow">${countStepper()}</div>
+        <div style="margin-top:10px;max-width:520px">${countSlider()}</div>
       </div>
       <div class="right">
         <div class="paperwrap"><div class="receipt"><div class="rh"><h3>Tur ayarları</h3><span>10 TUR</span></div>
           <div class="kv"><span>Mod</span><b>${s.mode === "sureli" ? "Süreli · " + dur : "Serbest"}</b></div>
           <div class="kv"><span>Seviye</span><b>${L.name}</b></div>
-          <div class="kv"><span>Sayı adedi</span><b>${s.count}</b></div>
+          <div class="kv"><span>Sayı adedi</span><b class="cs-val">${s.count}</b></div>
           <div class="kv"><span>İpucu hakkı</span><b>${s.hints}</b></div>
           <div class="tot"><span>En iyi skorun</span><b>${fmt(S.best)}</b></div></div></div>
         <div style="display:flex;flex-direction:column;gap:10px">${resumeNote()}<button class="b3 b-lime finish" data-a="start">Oyuna başla ↵</button></div>
@@ -1468,7 +1478,7 @@ function dSettings() {
         <div class="srow"><span class="lb">Varsayılan mod<small>Yeni oyunlar bu modla açılır</small></span>${seg("mode", [["sureli", "Süreli"], ["serbest", "Serbest"]])}</div>
         <div class="srow"><span class="lb">Varsayılan seviye</span>${lvSeg}</div>
         <div class="srow"><span class="lb">Tur süresi</span>${seg("duration", [[60, "1:00"], [120, "2:00"], [180, "3:00"]], true)}</div>
-        <div class="srow"><span class="lb">Sayı adedi<small>3 ile 12 arası</small></span>${countStepper(true)}</div>
+        <div class="srow srow-slider">${countSlider(true)}</div>
         <div class="srow"><span class="lb">İpucu hakkı<small>Her ipucu −150 puan</small></span><div class="stepper"><button data-a="hints" data-v="-1" aria-label="Azalt">−</button><b>${s.hints}</b><button data-a="hints" data-v="1" aria-label="Artır">+</button></div></div>
       </div>
       <div class="dcol">
@@ -1536,7 +1546,6 @@ const A = {
   next: () => nextRound(), retry: () => retryRound(), share: () => share(),
   sback: () => { const b = S.back || "home"; S.back = null; if (b === "game" && G) { go("game"); startTimer(); } else go(b === "settings" ? "home" : b); },
   sset: (v, el) => { const k = el.dataset.k; S.settings[k] = ["duration", "count"].includes(k) ? Number(v) : v; saveSettings(); if (k === "theme") applyTheme(); render(); },
-  cnt: v => { S.settings.count = Math.max(COUNT_MIN, Math.min(COUNT_MAX, S.settings.count + Number(v))); saveSettings(); render(); },
   hints: v => { S.settings.hints = Math.max(0, Math.min(5, S.settings.hints + Number(v))); saveSettings(); render(); },
   toggle: (v, el) => { const k = el.dataset.k; S.settings[k] = !S.settings[k]; saveSettings(); if (k === "music") { ac(); syncMusic(); } if (k === "vibe" && S.settings.vibe) buzz(30); if (k === "sfx" && S.settings.sfx) sfx.tap(); render(); },
   editname: () => { S.sheet = { type: "auth", via: S.user && S.user.via || "Misafir", edit: true }; render(); },
@@ -1551,6 +1560,14 @@ document.addEventListener("click", e => {
   ac();
   const fn = A[el.dataset.a]; if (fn) fn(el.dataset.v, el, e);
 });
+document.addEventListener("input", e => {
+  if (!e.target.classList.contains("cnt-range")) return;
+  const n = Number(e.target.value), pct = (n - COUNT_MIN) / (COUNT_MAX - COUNT_MIN) * 100;
+  e.target.style.setProperty("--p", pct + "%");
+  document.querySelectorAll(".cs-val").forEach(el => el.textContent = n);
+  if (n !== S.settings.count) { S.settings.count = n; saveSettings(); sfx.tap(); }
+});
+document.addEventListener("change", e => { if (e.target.classList.contains("cnt-range")) render(); });
 document.addEventListener("submit", e => {
   if (e.target.id !== "authform") return;
   e.preventDefault();
