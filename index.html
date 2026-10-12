@@ -175,7 +175,9 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .gmeta{margin-left:auto;display:flex;gap:18px;color:var(--muted);font-size:17px;white-space:nowrap}
 .gmeta b{color:var(--ink);font-size:20px;font-weight:800}
 .gtools{display:none;gap:10px}
-.ghead .backb,.ghead .dk{display:none}
+.ghead .dk{display:none}
+.rhead .backb{display:none}
+@media (max-width:919px){.game .ghead .logo{display:none}.game .ghead .iconbtn{width:44px;height:44px}}
 @media (max-width:919px){.ghead{gap:8px}.ghead .logo{font-size:24px}.gmeta{gap:10px;font-size:15px}.gmeta b{font-size:17px}.pill{padding:6px 10px}}
 .gmain{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
 .ring{position:relative;width:min(66vw,310px,32vh);aspect-ratio:1;max-width:100%}
@@ -552,6 +554,11 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .srow-slider .cs-top .cs-val{font-size:24px}
 .pauseov{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:var(--scrim)}
 .pauseov .card{padding:30px;text-align:center;display:flex;flex-direction:column;gap:16px;width:min(360px,calc(100% - 32px))}
+.pmenu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.pmenu button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:16px;background:var(--tile);font-weight:600;font-size:14px}
+.pmenu svg{width:22px;height:22px;color:var(--muted)}
+.pmenu .pm-exit{color:var(--pink-ink)}
+.pmenu .pm-exit svg{color:var(--pink-ink)}
 
 /* ---------- mobile type scale: one size per role across every phone screen ---------- */
 @media (max-width:919px){
@@ -603,7 +610,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "3.2";
+const APP_VERSION = "3.3";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -1106,7 +1113,7 @@ function vGame() {
         <button class="iconbtn" data-a="sound" aria-label="Ses">${S.settings.sfx ? I.sound : I.mute}</button>
         <button class="iconbtn" data-a="gsettings" aria-label="Ayarlar">${I.sliders}</button>
       </div>
-      <button class="iconbtn menu-m" data-a="gmenu" aria-label="Menü">${I.menu}</button>
+      <button class="iconbtn menu-m" data-a="pause" aria-label="Duraklat">${I.pause}</button>
     </header>
     <main class="gmain">
       ${ring}${liveBar}${chips}
@@ -1132,7 +1139,13 @@ function vGame() {
         <button class="b3 b-lime finish" data-a="finish">${fv} ile bitir</button>
       </div>
     </aside>
-    ${G.paused ? `<div class="pauseov"><div class="card"><h2 style="font-size:32px">Duraklatıldı</h2><p class="c-muted" style="margin:0">Sayılar gizlendi, süre durdu.</p><button class="b3 b-lime big" data-a="pause" autofocus>Devam et</button></div></div>` : ""}
+    ${G.paused ? `<div class="pauseov"><div class="card"><h2 style="font-size:32px">Duraklatıldı</h2><p class="c-muted" style="margin:0">Sayılar gizlendi, süre durdu.</p><button class="b3 b-lime big" data-a="pause">Devam et</button>
+      <div class="pmenu">
+        <button data-a="sound">${S.settings.sfx ? I.sound : I.mute}<span>Ses ${S.settings.sfx ? "açık" : "kapalı"}</span></button>
+        <button data-a="howto">${I.help}<span>Nasıl oynanır</span></button>
+        <button data-a="gsettings">${I.gear}<span>Ayarlar</span></button>
+        <button data-a="quit" class="pm-exit">${I.exit}<span>Turdan çık</span></button>
+      </div></div></div>` : ""}
   </div>`;
 }
 function resultHead(c) {
