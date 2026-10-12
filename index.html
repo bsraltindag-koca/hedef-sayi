@@ -44,7 +44,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
 input{font:inherit}
 .num{font-variant-numeric:tabular-nums}
-#app{min-height:100%;display:flex;flex-direction:column}
+#app{min-height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.ios body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ios input,.ios textarea{-webkit-user-select:text;user-select:text}
 
 /* ---------- shared ---------- */
 .col{width:100%;max-width:460px;margin:0 auto;padding:28px 20px 32px;display:flex;flex-direction:column;gap:18px;flex:1}
@@ -157,7 +159,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 @media (max-width:919px){.ghead{gap:8px}.ghead .logo{font-size:24px}.gmeta{gap:10px;font-size:15px}.gmeta b{font-size:17px}.pill{padding:6px 10px}}
 .gmain{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
 .ring{position:relative;width:min(72vw,310px);aspect-ratio:1;max-width:100%}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring > svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .tm svg{width:18px;height:18px;flex:none}
 .ring .ctr{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
 .ring .ctr small{font-family:var(--mono);font-weight:700;letter-spacing:.32em;color:var(--muted);font-size:14px;padding-left:.32em}
 .ring .ctr .tgt{font-family:var(--display);font-weight:800;font-size:clamp(78px,24vw,120px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
@@ -230,7 +233,8 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
   .tile{aspect-ratio:1}
   .tile .k{display:block}
   .tile.sel::after{content:"seçili";position:absolute;bottom:-30px;font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:0}
-  .ops{max-width:400px;margin-top:4px}
+  .gmain{justify-content:center;gap:22px;padding-bottom:40px}
+  .ops{max-width:400px;margin-top:0}
   .op{height:76px;width:76px;border-radius:50%;justify-self:center}
   .ring{width:320px}
 }
@@ -253,12 +257,19 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 .paperwrap .tot b{font-family:var(--display);font-size:46px;font-weight:800;letter-spacing:-.04em}
 .rbtns{display:grid;grid-template-columns:1fr 1.8fr;gap:14px}
 .rbtns.stack{grid-template-columns:1fr}
+.rstats{display:none;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:16px}
+.rstats span{display:block;color:var(--paper-muted);font-weight:600;font-size:15px}
+.rstats b{font-family:var(--mono);font-weight:800;font-size:20px}
 .rbtns button{min-height:64px;font-size:20px}
 @media (min-width:920px){
   .result{grid-template-columns:1fr 1fr;column-gap:80px;align-content:center;padding:48px 48px}
   .result .r-left{display:flex;flex-direction:column;gap:22px;align-self:center}
   .result .r-right{grid-row:span 2;align-self:center}
   .rbtns{grid-template-columns:auto auto;justify-content:start}
+  .rbtns .nextb{order:-1}
+  .win-stats{display:none}
+  .rstats{display:grid}
+  .paperwrap{transform:rotate(2deg);max-width:440px}
   .rbtns button{padding:0 32px}
   .rbtns.stack{grid-template-columns:auto auto}
 }
@@ -434,7 +445,9 @@ const sfx = {
   lose: () => [392, 311].forEach((f, i) => tone(f, .24, "sine", .05, i * .14)),
   tick: () => tone(1250, .03, "square", .015)
 };
-function buzz(ms) { if (S.settings.vibe) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} } }
+const nativeHaptic = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.haptic;
+if (nativeHaptic) document.documentElement.classList.add("ios");
+function buzz(ms) { if (!S.settings.vibe) return; try { if (nativeHaptic) nativeHaptic.postMessage(Array.isArray(ms) ? 60 : ms); else if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
 function syncMusic() {
   clearInterval(musicTimer); musicTimer = null;
   if (!S.settings.music) return;
@@ -785,7 +798,7 @@ function vGame() {
   const sel = G.sel !== null ? tileById(G.sel) : null;
   const live = liveTiles(), used = G.tiles.filter(t => t.used);
   const tiles = live.map((t, i) => `<button class="tile ${t.der ? "der" : ""} ${G.sel === t.id ? "sel" : ""}" data-a="tile" data-v="${t.id}" aria-label="${t.v}${G.sel === t.id ? ", seçili" : ""}"><span class="k">${i + 1}</span>${t.v}</button>`).join("")
-    + used.map(t => `<button class="tile used" disabled aria-label="${t.v}, kullanıldı">${t.v}</button>`).join("");
+    + used.filter(t => !t.der).map(t => `<button class="tile used" disabled aria-label="${t.v}, kullanıldı">${t.v}</button>`).join("");
   const diff = sel ? Math.abs(cur.target - sel.v) : null;
   const liveBar = `<div class="live" aria-live="polite">
       ${sel ? `<span class="lv a">${sel.v}</span>` : `<span class="lv slot">sayı seç</span>`}
@@ -859,15 +872,16 @@ function vResult() {
         <div><div class="eyebrow lime">${c.kind === "daily" ? "Günün bulmacası" : "Tur " + c.round} · ${l.steps} adımda</div>
         <h1>Tam<br>isabet!</h1>
         <p class="lead">${acc(l.target)} tam tutturdun. ${l.streakUp ? `Serin ${l.streakUp} güne çıktı.` : "Sıradaki tur seni bekliyor."}</p></div>
-        <div class="statrow">
+        <div class="statrow win-stats">
           <div class="stat"><small>Süre</small><b>${fmtT(l.time)}</b></div>
           <div class="stat"><small>İpucu</small><b>${l.hints}</b></div>
           <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
         </div>
-        <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime" data-a="next" autofocus>${nextLabel}</button></div>
+        <div class="rbtns"><button class="b3 b-tile" data-a="share">Paylaş</button><button class="b3 b-lime nextb" data-a="next">${nextLabel}</button></div>
       </div>
       <div class="r-right paperwrap"><div class="receipt"><div class="rh"><h3>Çözüm fişi</h3><span>${date}</span></div>${receiptRows(l.stepsList)}
-        <div class="tot"><span>Hedef</span><b>${l.target}</b></div></div></div>
+        <div class="tot"><span>Hedef</span><b>${l.target}</b></div>
+        <div class="rstats"><div><span>Süre</span><b>${fmtT(l.time)}</b></div><div><span>İpucu</span><b>${l.hints}</b></div><div><span>Puan</span><b>+${fmt(l.pts)}</b></div></div></div></div>
     </div>`;
   }
   const sol = solve(c.current.nums, c.current.target) || c.current.solution;
@@ -881,7 +895,7 @@ function vResult() {
         <div class="stat"><small>Süre</small><b>${fmtT(l.time)}</b></div>
         <div class="stat"><small>Puan</small><b class="c-lime">+${fmt(l.pts)}</b></div>
       </div>
-      <div class="rbtns stack"><button class="b3 b-lime" data-a="next" autofocus>${nextLabel}</button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
+      <div class="rbtns stack"><button class="b3 b-lime" data-a="next">${nextLabel}</button><button class="b3 b-tile" data-a="retry">Bu turu tekrar dene</button></div>
     </div>
     <div class="r-right"><div class="receipt"><div class="rh"><h3>Mümkün olan çözüm</h3><span>${sol.length} ADIM</span></div>${receiptRows(sol)}</div></div>
   </div>`;
