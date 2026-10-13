@@ -626,7 +626,7 @@ h1,h2,h3{margin:0;font-family:var(--display);letter-spacing:-.03em;text-wrap:bal
 <div id="app"></div>
 <script>
 "use strict";
-const APP_VERSION = "3.8";
+const APP_VERSION = "3.9";
 const APP_BUILD = "12.10.2026";
 /* ================= storage ================= */
 const store = {
@@ -739,22 +739,40 @@ function calc(a, op, b, strict) {
   }
   return null;
 }
-function pickNumbers(count, large, rng) {
-  const bigs = [25, 50, 75, 100], smalls = [];
-  for (let i = 1; i <= 10; i++) smalls.push(i, i);
-  const nL = Math.min(large, count - 2), out = [];
-  for (let i = 0; i < nL; i++) out.push(bigs.splice(Math.floor(rng() * bigs.length), 1)[0]);
-  const sm = [];
-  for (let i = 0; i < count - nL; i++) sm.push(smalls.splice(Math.floor(rng() * smalls.length), 1)[0]);
-  return sm.sort((a, b) => a - b).concat(out.sort((a, b) => a - b));
+// Number pools per level: small cards (each value at most twice) plus a varying number of big cards.
+const POOLS = {
+  kolay: { small: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], big: [10, 12, 15, 20, 25], nBig: [0, 1] },
+  orta: { small: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], big: [15, 20, 25, 30, 40, 50, 60, 75, 100], nBig: [1, 2] },
+  zor: { small: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], big: [20, 25, 30, 40, 50, 60, 75, 80, 90, 100], nBig: [1, 3] },
+  uzman: { small: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], big: [12, 15, 20, 25, 50, 75, 100], nBig: [1, 2] }
+};
+function pickNumbers(count, lv, rng) {
+  const P = POOLS[lv], pick = arr => arr.splice(Math.floor(rng() * arr.length), 1)[0];
+  const maxBig = Math.min(P.nBig[1], count - 2, P.big.length), minBig = Math.min(P.nBig[0], maxBig);
+  const nBig = minBig + Math.floor(rng() * (maxBig - minBig + 1));
+  const bigs = P.big.slice(), smalls = P.small.flatMap(v => [v, v]), out = [];
+  for (let i = 0; i < nBig; i++) out.push(pick(bigs));
+  while (out.length < count) out.push(pick(smalls));
+  for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+  return out;
 }
+// How many values two number sets share (as multisets).
+function overlap(a, b) { const c = b.slice(); let n = 0; for (const v of a) { const i = c.indexOf(v); if (i >= 0) { n++; c.splice(i, 1); } } return n; }
 function flatten(node) { return node.src ? [...flatten(node.src.a), ...flatten(node.src.b), { a: node.src.a.v, op: node.src.op, b: node.src.b.v, r: node.v }] : []; }
 // Every puzzle is built by combining all of its numbers, so the target is always reachable using each number once.
-function genRound(lv, count, rng) {
+function genRound(lv, count, rng, recent = []) {
+  const limit = Math.max(2, Math.ceil(count * 0.67));
+  for (let tries = 0; tries < 40; tries++) {
+    const r = genRoundOnce(lv, count, rng);
+    if (!r || !recent.some(p => p.target === r.target || overlap(p.nums, r.nums) >= limit)) return r;
+  }
+  return genRoundOnce(lv, count, rng);
+}
+function genRoundOnce(lv, count, rng) {
   const L = LEVELS[lv], ops = ["+", "-", "*", "/"];
   let fallback = null, bestGap = Infinity;
   for (let attempt = 0; attempt < 30000; attempt++) {
-    const nums = pickNumbers(count, L.large, rng);
+    const nums = pickNumbers(count, lv, rng);
     let pool = nums.map(v => ({ v, src: null })), fails = 0;
     while (pool.length > 1 && fails < 60) {
       const i = Math.floor(rng() * pool.length); let j = Math.floor(rng() * (pool.length - 1)); if (j >= i) j++;
@@ -822,7 +840,11 @@ function startGame(cfg) {
   S.session = { kind: "game", mode: cfg.mode, level: cfg.level, count: cfg.count, duration: S.settings.duration, round: 1, total: 10, score: 0, rounds: [], current: null };
   newRound(S.session); saveSession(); playRound(S.session);
 }
-function newRound(c, rng = Math.random) { c.current = genRound(c.level, c.count, rng); }
+function newRound(c, rng = Math.random) {
+  const recent = rng === Math.random ? (c.recent || []) : [];
+  c.current = genRound(c.level, c.count, rng, recent);
+  if (rng === Math.random) c.recent = recent.concat({ nums: c.current.nums, target: c.current.target }).slice(-6);
+}
 function startDaily() {
   const key = dayKey(), seed = Number(key.replace(/-/g, ""));
   const c = { kind: "daily", mode: "serbest", level: "orta", count: 6, duration: 0, round: 1, total: 1, score: 0, rounds: [], current: null };
